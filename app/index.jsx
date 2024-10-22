@@ -1,62 +1,39 @@
+// src/screens/Home.js
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, ActivityIndicator } from "react-native";
+import { View, ScrollView } from "react-native";
+import MotorcycleCard from "../components/MotorcycleCard";
+import { getMotorcycles } from "../services/motorclyceService"; // Importa tu función de servicio
+import Pagination from "../components/Pagination"; // Importa el componente de paginación
 
-const HomeScreen = () => {
+const Home = () => {
   const [motorcycles, setMotorcycles] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
 
-  // Función para obtener las motos desde la API usando fetch
-  const fetchMotorcycles = async () => {
-    try {
-      const response = await fetch(
-        "http://192.168.100.50:5000/api/motorcycles"
-      );
-      const data = await response.json();
-      setMotorcycles(data);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching motorcycles:", error);
-      setLoading(false);
-    }
+  const fetchMotorcycles = async (page) => {
+    const data = await getMotorcycles(page);
+    setMotorcycles(data.motorcycles); // Ajusta según la estructura de respuesta de tu API
+    setTotalPages(data.totalPages); // Asegúrate de que tu API devuelva el total de páginas
   };
 
-  // UseEffect para llamar a la función cuando el componente se monta
   useEffect(() => {
-    fetchMotorcycles();
-  }, []);
+    fetchMotorcycles(currentPage);
+  }, [currentPage]);
 
-  // Renderizar cada moto en una lista
-  const renderItem = ({ item }) => (
-    <View
-      style={{ padding: 10, borderBottomWidth: 1, borderBottomColor: "#ccc" }}
-    >
-      <Text style={{ fontSize: 18, fontWeight: "bold" }}>
-        {item.brand} {item.model}
-      </Text>
-      <Text>Año: {item.year}</Text>
-      <Text>Precio por día: ${item.rental_price}</Text>
-      <Text>{item.description}</Text>
-    </View>
-  );
-
-  // Mostrar un indicador de carga mientras los datos se están obteniendo
-  if (loading) {
-    return <ActivityIndicator size="large" color="#0000ff" />;
-  }
-
-  // Renderizado principal
   return (
-    <View style={{ flex: 1, padding: 20 }}>
-      <Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 10 }}>
-        Motos Disponibles
-      </Text>
-      <FlatList
-        data={motorcycles}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={renderItem}
-      />
-    </View>
+    <ScrollView>
+      <View className="flex-1 p-4">
+        {motorcycles.map((motorcycle) => (
+          <MotorcycleCard key={motorcycle.id} motorcycle={motorcycle} />
+        ))}
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
+      </View>
+    </ScrollView>
   );
 };
 
-export default HomeScreen;
+export default Home;
