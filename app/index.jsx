@@ -1,9 +1,9 @@
-// src/screens/Home.js
 import React, { useEffect, useState } from "react";
-import { View, ScrollView } from "react-native";
+import { View, ScrollView, StyleSheet } from "react-native";
 import MotorcycleCard from "../components/MotorcycleCard";
 import { getMotorcycles } from "../services/motorclyceService"; // Importa tu función de servicio
 import Pagination from "../components/Pagination"; // Importa el componente de paginación
+import colors from "../theme/colors"; // Importa los colores
 
 const Home = () => {
   const [motorcycles, setMotorcycles] = useState([]);
@@ -21,8 +21,8 @@ const Home = () => {
   }, [currentPage]);
 
   return (
-    <ScrollView>
-      <View className="flex-1 p-4">
+    <ScrollView style={styles.container}>
+      <View style={styles.content}>
         {motorcycles.map((motorcycle) => (
           <MotorcycleCard key={motorcycle.id} motorcycle={motorcycle} />
         ))}
@@ -35,5 +35,15 @@ const Home = () => {
     </ScrollView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.background, // Fondo principal
+  },
+  content: {
+    padding: 16,
+  },
+});
 
 export default Home;
