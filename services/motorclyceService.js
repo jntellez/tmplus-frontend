@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // URL base de la API
-const API_URL = "http://192.168.1.6:5000/api";
+const API_URL = process.env.API_URL;
 
 export const getMotorcycles = async (page = 1, limit = 5) => {
   try {
