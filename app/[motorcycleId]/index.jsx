@@ -7,10 +7,10 @@ import {
   Image,
   ScrollView,
 } from "react-native";
-import colors from "../theme/colors";
-import { useLocalSearchParams } from "expo-router";
-import { getMotorcycleById } from "../services/motorclyceService";
-import motorcycleImg from "../assets/motorcycleImg.png";
+import colors from "../../theme/colors";
+import { router, useLocalSearchParams } from "expo-router";
+import { getMotorcycleById } from "../../services/motorclyceService";
+import motorcycleImg from "../../assets/motorcycleImg.png";
 
 const DetailScreen = () => {
   const { motorcycleId } = useLocalSearchParams();
@@ -107,6 +107,14 @@ const DetailScreen = () => {
           />
         </View>
       )}
+
+      <View style={styles.rentButtonContainer}>
+        <Button
+          title="Alquilar Motocicleta"
+          color={colors.primaryButton}
+          onPress={() => router.push(`/${motorcycleId}/rents`)}
+        />
+      </View>
     </ScrollView>
   );
 };
