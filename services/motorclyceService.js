@@ -1,7 +1,5 @@
 import axios from "axios";
-
-// URL base de la API
-const API_URL = process.env.API_URL;
+import { API_URL } from "../constants";
 
 export const getMotorcycles = async (page = 1, limit = 5) => {
   try {

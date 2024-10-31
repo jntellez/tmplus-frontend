@@ -2,31 +2,41 @@ import React, { useState } from "react";
 import { View, Text, TextInput, Button, Alert, StyleSheet } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { createRental } from "../../../services/rentalService";
-import colors from "../../../theme/colors"; // Importación del tema de colores
+import colors from "../../../theme/colors";
 
 const Rents = () => {
-  const { motorcycleId } = useLocalSearchParams(); // Asumiendo que se pasa el ID de la moto a esta vista
+  const { motorcycleId } = useLocalSearchParams();
   const [rentalDate, setRentalDate] = useState("");
   const [duration, setDuration] = useState("");
   const [customerName, setCustomerName] = useState("");
+  const [dailyRentalPrice, setDailyRentalPrice] = useState(100); // Precio diario por defecto o desde la API
+
+  // Función para calcular la fecha de fin de renta
+  const calculateEndDate = (startDate, days) => {
+    const start = new Date(startDate);
+    start.setDate(start.getDate() + parseInt(days));
+    return start.toISOString().split("T")[0]; // Formato YYYY-MM-DD
+  };
 
   // Función para manejar la creación de la reserva
   const handleCreateRental = async () => {
-    // Validación básica de los campos
     if (!rentalDate || !duration || !customerName) {
       Alert.alert("Error", "Por favor completa todos los campos.");
       return;
     }
 
+    const endDate = calculateEndDate(rentalDate, duration);
+    const totalPrice = dailyRentalPrice * parseInt(duration);
+
     try {
-      // Datos para la reserva
       const rentalData = {
-        motorcycleId,
-        rentalDate,
-        duration,
-        customerName,
+        user_id: 1,
+        motorcycle_id: parseInt(motorcycleId),
+        start_date: rentalDate,
+        end_date: endDate,
+        total_price: totalPrice,
       };
-      // Llamada al servicio para crear la reserva
+
       await createRental(rentalData);
       Alert.alert("Éxito", "Reserva creada con éxito");
     } catch (error) {
