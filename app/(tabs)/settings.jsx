@@ -1,6 +1,8 @@
 // screens/SettingsScreen.jsx
 import React from "react";
 import { View, Text, Switch, Button, StyleSheet } from "react-native";
+import { useRouter } from "expo-router";
+import * as SecureStore from "expo-secure-store";
 import colors from "../../theme/colors"; // Asegúrate de tener un archivo de colores en tu proyecto
 
 export default function SettingsScreen() {
@@ -8,10 +10,13 @@ export default function SettingsScreen() {
     React.useState(false);
   const toggleNotifications = () =>
     setIsNotificationsEnabled((previousState) => !previousState);
+  const router = useRouter();
 
-  const handleLogout = () => {
-    // Agrega tu lógica de cierre de sesión aquí
-    console.log("Cerrando sesión...");
+  const handleLogout = async () => {
+    // Eliminar el token almacenado
+    await SecureStore.deleteItemAsync("authToken");
+    // Redirigir al login
+    router.replace("/login");
   };
 
   return (

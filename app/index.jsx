@@ -1,37 +1,56 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, ActivityIndicator } from "react-native";
+import { View, Text, ActivityIndicator, StyleSheet } from "react-native";
+import { checkAuth } from "../services/authService"; // Importar el servicio de autenticación
 import { useRouter } from "expo-router";
 
-export default function IndexScreen() {
-  const router = useRouter();
+export default function AuthLoadingScreen() {
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
-    const checkAuthentication = async () => {
-      // Aquí podrías verificar si el usuario está autenticado.
-      // Por ejemplo, podrías revisar si hay un token almacenado.
-      const isAuthenticated = false; // Cambia esto según tu lógica de autenticación
+    const verifyAuth = async () => {
+      try {
+        const token = await checkAuth(); // Verificar si hay un token de autenticación
 
-      if (isAuthenticated) {
-        router.replace("/home"); // Redirige a la pantalla principal si está autenticado
-      } else {
-        router.replace("/login"); // Redirige a la pantalla de login si no está autenticado
+        if (token) {
+          // Si hay token, redirigir al Home
+          router.replace("/home");
+        } else {
+          // Si no hay token, redirigir al login
+          router.replace("/login");
+        }
+      } catch (error) {
+        console.error("Error al verificar autenticación:", error);
+        router.replace("/login"); // En caso de error, redirigir al login
       }
 
-      setLoading(false); // Detiene el estado de carga
+      setLoading(false); // Terminar el estado de carga
     };
 
-    checkAuthentication();
+    verifyAuth();
   }, []);
 
   if (loading) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" />
-        <Text>Cargando...</Text>
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#fff" />
+        <Text style={styles.loadingText}>Cargando...</Text>
       </View>
     );
   }
 
-  return null; // Devolver null ya que el uso de `router.replace` maneja la navegación
+  return null;
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#0d1117", // Fondo oscuro
+  },
+  loadingText: {
+    marginTop: 10,
+    color: "#c9d1d9", // Color claro para el texto
+  },
+});

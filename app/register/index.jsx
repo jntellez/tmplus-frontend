@@ -1,77 +1,131 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Button, StyleSheet, Alert } from "react-native";
+import {
+  Button,
+  TextInput,
+  View,
+  Text,
+  ActivityIndicator,
+  StyleSheet,
+} from "react-native";
+import { register } from "../../services/authService"; // Importar el servicio de autenticación
 import { useRouter } from "expo-router";
+import colors from "../../theme/colors"; // Importa los colores del tema
 
 export default function RegisterScreen() {
-  const router = useRouter();
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const handleRegister = async () => {
-    if (password !== confirmPassword) {
-      return Alert.alert("Error", "Las contraseñas no coinciden");
-    }
+    setLoading(true); // Mostrar el indicador de carga
+    setError(""); // Limpiar el mensaje de error antes de intentar el registro
 
     try {
-      // Lógica de registro (e.g., llamada a la API)
-      const success = true; // Cambia esto según la respuesta de la API
-      if (success) {
-        Alert.alert("Éxito", "Cuenta creada exitosamente");
-        router.replace("/login"); // Redirige a la pantalla de login
+      if (name && email && password) {
+        // Llamar al servicio de registro
+        const token = await register(name, email, password);
+
+        if (token) {
+          // Si el registro es exitoso, redirigir al Home
+          router.replace("/home");
+        }
       } else {
-        Alert.alert("Error", "No se pudo crear la cuenta");
+        setError("Por favor ingrese todos los campos");
       }
     } catch (error) {
-      Alert.alert("Error", "Ocurrió un problema al registrarse");
+      setError("Error al registrar el usuario. Intenta de nuevo.");
+    } finally {
+      setLoading(false); // Ocultar el indicador de carga después del proceso
     }
+  };
+
+  const navigateToLogin = () => {
+    // Navegar a la pantalla de login
+    router.push("/login");
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Registro</Text>
+      <Text style={styles.title}>Registrarse</Text>
+      {/* Título de la pantalla */}
       <TextInput
+        style={[styles.input, error && styles.errorInput]}
+        placeholder="Nombre"
+        value={name}
+        onChangeText={setName}
+        placeholderTextColor={colors.secondaryTextLight} // Color del texto del placeholder
+      />
+      <TextInput
+        style={[styles.input, error && styles.errorInput]}
         placeholder="Correo electrónico"
         value={email}
         onChangeText={setEmail}
-        style={styles.input}
+        keyboardType="email-address"
+        placeholderTextColor={colors.secondaryTextLight} // Color del texto del placeholder
       />
       <TextInput
+        style={[styles.input, error && styles.errorInput]}
         placeholder="Contraseña"
+        secureTextEntry
         value={password}
         onChangeText={setPassword}
-        secureTextEntry
-        style={styles.input}
+        placeholderTextColor={colors.secondaryTextLight} // Color del texto del placeholder
       />
-      <TextInput
-        placeholder="Confirmar contraseña"
-        value={confirmPassword}
-        onChangeText={setConfirmPassword}
-        secureTextEntry
-        style={styles.input}
-      />
-      <Button title="Registrarse" onPress={handleRegister} />
-      <Text style={styles.loginLink} onPress={() => router.push("/login")}>
-        ¿Ya tienes cuenta? Inicia Sesión
+      {loading ? (
+        <ActivityIndicator size="large" color={colors.secondaryTextLight} />
+      ) : (
+        <Button
+          title="Registrarse"
+          onPress={handleRegister}
+          color={colors.primaryButtonColor} // Color del botón
+        />
+      )}
+      {error && <Text style={styles.error}>{error}</Text>}
+      <Text style={styles.loginLink} onPress={navigateToLogin}>
+        ¿Ya tienes cuenta? Inicia sesión
       </Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", padding: 20 },
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    padding: 20,
+    backgroundColor: colors.background, // Color de fondo de la pantalla
+  },
   title: {
     fontSize: 24,
     fontWeight: "bold",
-    marginBottom: 20,
-    textAlign: "center",
+    color: colors.primaryTextLight, // Color del texto del título
+    textAlign: "center", // Centrar el título
+    marginBottom: 20, // Separación entre el título y los inputs
   },
   input: {
     height: 40,
-    borderColor: "gray",
+    borderColor: colors.borderColor, // Color del borde de los inputs
     borderWidth: 1,
     marginBottom: 10,
     paddingLeft: 8,
+    color: colors.primaryTextLight, // Color del texto en los inputs
+    borderRadius: 4, // Redondear los bordes de los inputs
   },
-  loginLink: { marginTop: 20, color: "blue", textAlign: "center" },
+  errorInput: {
+    borderColor: colors.dangerButton, // Color de borde en caso de error
+  },
+  error: {
+    color: colors.dangerButton, // Color del mensaje de error
+    marginTop: 10,
+    textAlign: "center", // Centrar el mensaje de error
+  },
+  loginLink: {
+    color: colors.secondaryTextLight, // Color del enlace de login
+    marginTop: 20,
+    textAlign: "center",
+    textDecorationLine: "underline",
+  },
 });
