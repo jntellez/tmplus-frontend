@@ -1,16 +1,6 @@
 import axios from "axios";
-import { API_URL, token } from "../constants";
-
-// Función para obtener el token de autenticación
-const getAuthToken = async () => {
-  try {
-    // O el nombre que estés usando
-    return token;
-  } catch (error) {
-    console.error("Error getting auth token:", error);
-    return null;
-  }
-};
+import { API_URL } from "../constants";
+import { checkAuth as getAuthToken } from "./authService";
 
 // Función para obtener todas las reservas de un usuario específico
 export const getAllByUserId = async (userId) => {

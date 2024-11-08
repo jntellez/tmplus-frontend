@@ -11,16 +11,41 @@ import {
 import { router } from "expo-router";
 import { getAllByUserId } from "../../services/rentalService";
 import colors from "../../theme/colors";
+import * as SecureStore from "expo-secure-store";
 
 const RentalsHistory = () => {
   const [rentals, setRentals] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
 
+  // Fetch user data and rentals on component mount
   useEffect(() => {
-    const fetchRentals = async () => {
+    const fetchUserData = async () => {
       try {
-        const data = await getAllByUserId(1);
-        setRentals(data);
+        const userData = await SecureStore.getItemAsync("user");
+        if (userData) {
+          const parsedUser = JSON.parse(userData);
+          setUser(parsedUser);
+          fetchRentals(parsedUser.id);
+        } else {
+          Alert.alert(
+            "Error",
+            "Usuario no encontrado. Por favor, inicia sesión."
+          );
+        }
+      } catch (error) {
+        Alert.alert(
+          "Error",
+          "No se pudo recuperar la información del usuario."
+        );
+        setLoading(false);
+      }
+    };
+
+    const fetchRentals = async (userId) => {
+      try {
+        const rentalsData = await getAllByUserId(userId);
+        setRentals(rentalsData);
       } catch (error) {
         Alert.alert("Error", "No se pudo cargar el historial de reservas.");
       } finally {
@@ -28,7 +53,7 @@ const RentalsHistory = () => {
       }
     };
 
-    fetchRentals();
+    fetchUserData();
   }, []);
 
   const handlePress = (rentalId) => {

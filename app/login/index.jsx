@@ -6,10 +6,13 @@ import {
   Text,
   ActivityIndicator,
   StyleSheet,
+  Alert,
 } from "react-native";
-import { login } from "../../services/authService"; // Importar el servicio de autenticación
+import { login, parseJwt } from "../../services/authService";
 import { useRouter } from "expo-router";
-import colors from "../../theme/colors"; // Importa los colores del tema
+import colors from "../../theme/colors";
+import { getUserData } from "../../services/userService";
+import * as SecureStore from "expo-secure-store";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
@@ -19,44 +22,53 @@ export default function LoginScreen() {
   const router = useRouter();
 
   const handleLogin = async () => {
-    setLoading(true); // Mostrar el indicador de carga
-    setError(""); // Limpiar el mensaje de error antes de intentar el login
+    setLoading(true);
+    setError("");
+
+    if (!email || !password) {
+      setError("Por favor ingrese el correo y la contraseña");
+      setLoading(false);
+      return;
+    }
 
     try {
-      if (email && password) {
-        // Llamar al servicio de login
-        const token = await login(email, password);
+      const token = await login(email, password);
 
-        if (token) {
-          // Si el login es exitoso, redirigir al Home
-          router.replace("/home");
-        }
+      if (token) {
+        const { id } = parseJwt(token);
+        const userData = await getUserData(id);
+
+        await SecureStore.setItemAsync("user", JSON.stringify(userData));
+
+        router.replace("/home");
       } else {
-        setError("Por favor ingrese el correo y la contraseña");
+        setError("Credenciales incorrectas. Intente de nuevo.");
       }
     } catch (error) {
-      setError("Error al iniciar sesión. Intenta de nuevo.");
+      setError(
+        "Error al iniciar sesión. Verifique su conexión e intente de nuevo."
+      );
+      Alert.alert("Error", error.message || "No se pudo iniciar sesión.");
     } finally {
-      setLoading(false); // Ocultar el indicador de carga después del proceso
+      setLoading(false);
     }
   };
 
   const navigateToRegister = () => {
-    // Navegar a la pantalla de registro
     router.push("/register");
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Iniciar sesión</Text>
-      {/* Título de la pantalla */}
       <TextInput
         style={[styles.input, error && styles.errorInput]}
         placeholder="Correo electrónico"
         value={email}
         onChangeText={setEmail}
         keyboardType="email-address"
-        placeholderTextColor={colors.secondaryTextLight} // Color del texto del placeholder
+        placeholderTextColor={colors.secondaryTextLight}
+        autoCapitalize="none"
       />
       <TextInput
         style={[styles.input, error && styles.errorInput]}
@@ -64,10 +76,10 @@ export default function LoginScreen() {
         secureTextEntry
         value={password}
         onChangeText={setPassword}
-        placeholderTextColor={colors.secondaryTextLight} // Color del texto del placeholder
+        placeholderTextColor={colors.secondaryTextLight}
       />
       {loading ? (
-        <ActivityIndicator size="large" color={colors.secondaryTextLight} />
+        <ActivityIndicator size="large" color={colors.primaryButtonColor} />
       ) : (
         <Button
           title="Iniciar sesión"
@@ -99,12 +111,12 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 40,
-    borderColor: colors.borderColor, // Color del borde de los inputs
+    borderColor: colors.borderColor,
     borderWidth: 1,
     marginBottom: 10,
     paddingLeft: 8,
-    color: colors.primaryTextLight, // Color del texto en los inputs
-    borderRadius: 4, // Redondear los bordes de los inputs
+    color: colors.primaryTextLight,
+    borderRadius: 4,
   },
   errorInput: {
     borderColor: colors.dangerButton,
@@ -112,6 +124,7 @@ const styles = StyleSheet.create({
   error: {
     color: colors.dangerButton,
     marginTop: 10,
+    textAlign: "center",
   },
   registerLink: {
     color: colors.secondaryTextLight,

@@ -7,9 +7,11 @@ import {
   ActivityIndicator,
   StyleSheet,
 } from "react-native";
-import { register } from "../../services/authService"; // Importar el servicio de autenticación
+import { register, parseJwt } from "../../services/authService"; // Importar el servicio de autenticación
 import { useRouter } from "expo-router";
 import colors from "../../theme/colors"; // Importa los colores del tema
+import * as SecureStore from "expo-secure-store";
+import { getUserData } from "../../services/userService"; // Servicio para obtener datos del usuario
 
 export default function RegisterScreen() {
   const [name, setName] = useState("");
@@ -29,7 +31,14 @@ export default function RegisterScreen() {
         const token = await register(name, email, password);
 
         if (token) {
-          // Si el registro es exitoso, redirigir al Home
+          // Si el registro es exitoso, extraer el ID del usuario desde el token
+          const { id } = parseJwt(token);
+          const userData = await getUserData(id);
+
+          // Guardar los datos del usuario en SecureStore
+          await SecureStore.setItemAsync("user", JSON.stringify(userData));
+
+          // Redirigir al Home
           router.replace("/home");
         }
       } else {

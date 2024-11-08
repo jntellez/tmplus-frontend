@@ -87,3 +87,21 @@ export const logout = async () => {
     throw error;
   }
 };
+
+// Función para decodificar el payload de un JWT
+export const parseJwt = (token) => {
+  try {
+    const base64Url = token.split(".")[1]; // Separa el payload
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split("")
+        .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+        .join("")
+    );
+    return JSON.parse(jsonPayload); // Devuelve el objeto del payload
+  } catch (error) {
+    console.error("Error decoding token:", error);
+    return null;
+  }
+};

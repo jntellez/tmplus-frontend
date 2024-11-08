@@ -3,22 +3,23 @@ import { View, Text, TextInput, Button, Alert, StyleSheet } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { createRental } from "../../../services/rentalService";
 import colors from "../../../theme/colors";
+import * as SecureStore from "expo-secure-store";
+import { useRouter } from "expo-router";
 
 const Rents = () => {
   const { motorcycleId } = useLocalSearchParams();
   const [rentalDate, setRentalDate] = useState("");
   const [duration, setDuration] = useState("");
   const [customerName, setCustomerName] = useState("");
-  const [dailyRentalPrice, setDailyRentalPrice] = useState(100); // Precio diario por defecto o desde la API
+  const [dailyRentalPrice, setDailyRentalPrice] = useState(100);
+  const router = useRouter();
 
-  // Función para calcular la fecha de fin de renta
   const calculateEndDate = (startDate, days) => {
     const start = new Date(startDate);
     start.setDate(start.getDate() + parseInt(days));
-    return start.toISOString().split("T")[0]; // Formato YYYY-MM-DD
+    return start.toISOString().split("T")[0];
   };
 
-  // Función para manejar la creación de la reserva
   const handleCreateRental = async () => {
     if (!rentalDate || !duration || !customerName) {
       Alert.alert("Error", "Por favor completa todos los campos.");
@@ -27,18 +28,24 @@ const Rents = () => {
 
     const endDate = calculateEndDate(rentalDate, duration);
     const totalPrice = dailyRentalPrice * parseInt(duration);
+    const userData = JSON.parse(await SecureStore.getItemAsync("user"));
 
     try {
       const rentalData = {
-        user_id: 1,
+        user_id: userData.id,
         motorcycle_id: parseInt(motorcycleId),
         start_date: rentalDate,
         end_date: endDate,
         total_price: totalPrice,
       };
 
-      await createRental(rentalData);
-      Alert.alert("Éxito", "Reserva creada con éxito");
+      const response = await createRental(rentalData);
+
+      // Reemplaza la pantalla actual por el tab de Historial y luego navega al detalle de la renta
+      router.replace("/rentalsHistory"); // Navega al tab de historial
+      setTimeout(() => {
+        router.push(`/rental/${response.id}`); // Muestra el detalle de la renta
+      }, 100);
     } catch (error) {
       console.error("Error creando reserva:", error.message);
       Alert.alert("Error", "No se pudo crear la reserva. Inténtalo de nuevo.");
