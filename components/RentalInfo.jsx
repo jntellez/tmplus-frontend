@@ -2,6 +2,14 @@ import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import colors from "../theme/colors";
 
+// Mapa de traducciones de estados
+const statusTranslations = {
+  completed: "Completado",
+  confirmed: "Confirmado",
+  pending: "Pendiente",
+  cancelled: "Cancelado",
+};
+
 // Función para obtener el color del estado
 const getStatusColor = (status) => {
   switch (status.toLowerCase()) {
@@ -19,20 +27,6 @@ const getStatusColor = (status) => {
 };
 
 const RentalInfo = ({ rental, customerName }) => {
-  // Detalles del alquiler
-  const rentalDetails = [
-    { label: "Cliente", value: customerName },
-    { label: "Precio total", value: `$${rental.total_price}` },
-    {
-      label: "Estado",
-      value: rental.status.charAt(0).toUpperCase() + rental.status.slice(1),
-    },
-    {
-      label: "Fecha de alquiler",
-      value: new Date(rental.rental_date).toLocaleDateString(),
-    },
-  ];
-
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Detalle del Alquiler</Text>
@@ -70,7 +64,9 @@ const RentalInfo = ({ rental, customerName }) => {
           <Text
             style={[styles.cardText, { color: getStatusColor(rental.status) }]}
           >
-            {rental.status.charAt(0).toUpperCase() + rental.status.slice(1)}
+            {/* Usar la traducción para el estado */}
+            {statusTranslations[rental.status.toLowerCase()] ||
+              rental.status.charAt(0).toUpperCase() + rental.status.slice(1)}
           </Text>
         </View>
       </View>
@@ -134,41 +130,6 @@ const styles = StyleSheet.create({
     color: colors.lightText || "#E0E0E0",
     marginBottom: 4,
   },
-  errorText: {
-    textAlign: "center",
-    color: colors.error,
-    fontSize: 18,
-  },
-  keyBold: {
-    fontWeight: "bold",
-  },
-  motorcycleCard: {
-    backgroundColor: colors.cardBackground,
-    borderRadius: 10,
-    padding: 16,
-    marginBottom: 16,
-    elevation: 3,
-    position: "relative", // Necesario para posicionar el ícono
-  },
-  motorcycleInfoContainer: {
-    flexDirection: "row", // Coloca los elementos en una fila
-    alignItems: "center", // Alinea los elementos verticalmente
-    justifyContent: "space-between", // Asegura que haya espacio entre los elementos
-  },
-  motorcycleImage: {
-    width: 100, // Ajusta el tamaño de la imagen
-    height: 100,
-    borderRadius: 10,
-    marginRight: 16, // Separación entre la imagen y la información
-    marginTop: 2,
-  },
-  motorcycleDetails: {
-    flex: 1, // Hace que el contenedor de detalles ocupe el espacio disponible
-  },
-  arrowIcon: {
-    position: "absolute",
-    top: 16,
-    right: 16,
-  },
 });
+
 export default RentalInfo;
