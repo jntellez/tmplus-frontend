@@ -47,7 +47,14 @@ const RentalDetail = () => {
       value: new Date(rental.end_date).toLocaleDateString(),
     },
     { label: "Precio total", value: `$${rental.total_price}` },
-    // Agrega otros detalles aquí si es necesario
+    {
+      label: "Estado",
+      value: rental.status.charAt(0).toUpperCase() + rental.status.slice(1),
+    },
+    {
+      label: "Fecha de creación",
+      value: new Date(rental.rental_date).toLocaleDateString(),
+    },
   ];
 
   return (
@@ -67,7 +74,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: colors.background, // Fondo oscuro
+    backgroundColor: colors.background,
   },
   title: {
     fontSize: 24,
@@ -77,21 +84,21 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   card: {
-    backgroundColor: colors.cardBackground, // Fondo más claro para cada tarjeta
+    backgroundColor: colors.cardBackground,
     borderRadius: 10,
-    padding: 16, // Espaciado interno
-    marginBottom: 16, // Espacio entre tarjetas
-    elevation: 3, // Sombra para dar profundidad
+    padding: 16,
+    marginBottom: 16,
+    elevation: 3,
   },
   cardHeader: {
-    fontSize: 18, // Tamaño de fuente para encabezados
+    fontSize: 18,
     fontWeight: "bold",
-    color: colors.linkColor, // Color del encabezado
+    color: colors.linkColor,
     marginBottom: 8,
   },
   cardText: {
     fontSize: 16,
-    color: colors.lightText || "#E0E0E0", // Texto claro para contenido
+    color: colors.lightText || "#E0E0E0",
   },
   errorText: {
     textAlign: "center",

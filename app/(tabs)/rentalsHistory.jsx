@@ -66,8 +66,12 @@ const RentalsHistory = () => {
       style={styles.rentalItem}
     >
       <Text style={styles.rentalText}>Cliente: {item.customer_name}</Text>
-      <Text style={styles.rentalText}>Fecha de inicio: {item.start_date}</Text>
-      <Text style={styles.rentalText}>Fecha de fin: {item.end_date}</Text>
+      <Text style={styles.rentalText}>
+        Fecha de inicio: {new Date(item.start_date).toLocaleDateString()}
+      </Text>
+      <Text style={styles.rentalText}>
+        Fecha de fin: {new Date(item.end_date).toLocaleDateString()}
+      </Text>
       <Text style={styles.rentalText}>Precio total: ${item.total_price}</Text>
     </TouchableOpacity>
   );
