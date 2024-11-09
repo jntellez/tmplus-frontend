@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import colors from "../../theme/colors";
 import { router, useLocalSearchParams } from "expo-router";
-import { getMotorcycleById } from "../../services/motorclyceService";
+import { getMotorcycleById } from "../../services/motorcycleService";
 import motorcycleImg from "../../assets/motorcycleImg.png";
 
 const DetailScreen = () => {

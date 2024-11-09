@@ -53,13 +53,13 @@ export const createRental = async (rentalData) => {
 // Función para actualizar una reserva existente
 export const updateRental = async (id, rentalData) => {
   try {
-    const token = await getAuthToken();
+    const token = await getAuthToken(); // Obtener el token de autenticación
     const response = await axios.put(`${API_URL}/rentals/${id}`, rentalData, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
-    return response.data;
+    return response.data; // Retorna los datos actualizados de la renta
   } catch (error) {
     console.error("Error updating rental:", error.message);
     throw new Error(`Could not update rental with ID: ${id}`);

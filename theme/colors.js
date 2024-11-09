@@ -9,6 +9,15 @@ const colors = {
   borderColor: "#30363d", // Color de bordes
   secondaryButton: "#21262d", // Color de fondo para botones secundarios
   linkColor: "#58a6ff", // Color para enlaces
+  lightText: "#E0E0E0", // Texto claro por defecto
+
+  // Colores para los estados de alquiler
+  completed: "#9E9E9E", // Gris para completado
+  confirmed: "#4CAF50", // Verde para confirmado
+  pending: "#FFEB3B", // Amarillo para pendiente
+  cancelled: "#FF5722", // Rojo para cancelado
+  warning: "#FFEB3B", // Amarillo brillante para advertencia
+  errorText: "#FF5722", // Rojo para error
 };
 
 export default colors;

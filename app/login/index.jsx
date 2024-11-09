@@ -48,7 +48,6 @@ export default function LoginScreen() {
       setError(
         "Error al iniciar sesión. Verifique su conexión e intente de nuevo."
       );
-      Alert.alert("Error", error.message || "No se pudo iniciar sesión.");
     } finally {
       setLoading(false);
     }

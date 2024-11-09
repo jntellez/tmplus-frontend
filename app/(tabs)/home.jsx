@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, ScrollView, StyleSheet } from "react-native";
 import MotorcycleCard from "../../components/MotorcycleCard";
-import { getMotorcycles } from "../../services/motorclyceService"; // Importa tu función de servicio
+import { getMotorcycles } from "../../services/motorcycleService"; // Importa tu función de servicio
 import Pagination from "../../components/Pagination"; // Importa el componente de paginación
 import colors from "../../theme/colors"; // Importa los colores
 
