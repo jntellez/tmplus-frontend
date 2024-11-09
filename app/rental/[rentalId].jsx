@@ -1,3 +1,5 @@
+// src/screens/RentalDetail.js
+
 import React, { useEffect, useState } from "react";
 import {
   ScrollView,
@@ -5,8 +7,6 @@ import {
   Text,
   Button,
   StyleSheet,
-  Modal,
-  View,
 } from "react-native";
 import { getRentalById, updateRental } from "../../services/rentalService";
 import { getMotorcycleById } from "../../services/motorcycleService";
@@ -15,6 +15,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import RentalInfo from "../../components/RentalInfo";
 import MotorcycleCardSmall from "../../components/MotorcycleCardSmall";
+import ConfirmationModal from "../../components/ConfirmationModal"; // Importamos el modal
 
 const RentalDetail = () => {
   const { rentalId } = useLocalSearchParams();
@@ -57,6 +58,8 @@ const RentalDetail = () => {
   const handleCancelRental = async () => {
     if (!rental || !rental.id) return;
 
+    setIsCanceling(true); // Establecemos que se está procesando la cancelación
+
     const rentalData = {
       ...rental,
       status: "cancelled",
@@ -65,8 +68,9 @@ const RentalDetail = () => {
     try {
       const updatedRental = await updateRental(rental.id, rentalData);
       setRental(updatedRental);
-      setError(null); // Reset error message if cancellation is successful
+      setError(null); // Resetear el mensaje de error si la cancelación fue exitosa
       setIsCanceling(false); // Cerrar el modal si la cancelación fue exitosa
+      setShowModal(false); // Cerrar el modal después de confirmar
     } catch (error) {
       console.error("Error canceling rental:", error);
       setError("No se pudo cancelar el alquiler.");
@@ -119,34 +123,16 @@ const RentalDetail = () => {
         />
       )}
 
-      {/* Modal de confirmación de cancelación */}
-      <Modal
+      {/* Usamos el componente de modal */}
+      <ConfirmationModal
         visible={showModal}
-        animationType="slide"
-        transparent={true}
-        onRequestClose={hideCancelModal}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>
-              ¿Estás seguro de cancelar esta renta?
-            </Text>
-            <View style={styles.modalButtons}>
-              <Button
-                title="Cancelar"
-                onPress={hideCancelModal}
-                color={colors.primaryButton} // Usando el color de botón primario para cancelar
-              />
-              <Button
-                title="Confirmar"
-                onPress={handleCancelRental}
-                color={colors.dangerButton} // Usando el color de botón de peligro para confirmar
-                disabled={isCanceling} // Deshabilitar botón si se está procesando la cancelación
-              />
-            </View>
-          </View>
-        </View>
-      </Modal>
+        title="¿Estás seguro de cancelar esta renta?"
+        onCancel={hideCancelModal}
+        onConfirm={handleCancelRental}
+        isConfirming={isCanceling}
+        cancelButtonText="Cancelar"
+        confirmButtonText="Confirmar"
+      />
     </ScrollView>
   );
 };
@@ -168,30 +154,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: colors.errorText,
     fontSize: 18,
-  },
-  modalOverlay: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-  },
-  modalContainer: {
-    width: "80%",
-    padding: 20,
-    backgroundColor: colors.cardBackground, // Fondo del modal con color de tarjeta
-    borderRadius: 10,
-    alignItems: "center",
-  },
-  modalTitle: {
-    fontSize: 18,
-    marginBottom: 20,
-    textAlign: "center",
-    color: colors.lightText, // Título del modal con color de texto primario
-  },
-  modalButtons: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "100%",
   },
 });
 
