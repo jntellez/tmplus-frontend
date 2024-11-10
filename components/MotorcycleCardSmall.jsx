@@ -3,16 +3,21 @@ import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import colors from "../theme/colors";
 import defaultMotoImage from "../assets/motorcycleImg.png";
+import { SERVER_URL } from "../constants"; // Asegúrate de importar el servidor
 
 const MotorcycleCardSmall = ({ motorcycle, onPress }) => {
+  // Verificar si 'motorcycle.image' está disponible y es una URL completa
+  const imageUrl =
+    motorcycle?.images && motorcycle.images.length > 0
+      ? { uri: `${SERVER_URL}${motorcycle.images[0]}` } // Concatenar la URL base con la imagen
+      : defaultMotoImage; // Si no hay imágenes, usar la imagen por defecto
+
   return (
     <TouchableOpacity style={styles.motorcycleCard} onPress={onPress}>
       <Text style={styles.cardHeader}>Información de la Motocicleta</Text>
       <View style={styles.motorcycleInfoContainer}>
         <Image
-          source={
-            motorcycle.image ? { uri: motorcycle.image } : defaultMotoImage
-          }
+          source={imageUrl} // Usar la URL de la imagen concatenada o la imagen por defecto
           style={styles.motorcycleImage}
         />
         <View style={styles.motorcycleDetails}>
@@ -29,7 +34,7 @@ const MotorcycleCardSmall = ({ motorcycle, onPress }) => {
             {motorcycle.year}
           </Text>
           <Text style={styles.cardText}>
-            <Text style={styles.keyBold}>Precio/día: </Text>$
+            <Text style={styles.keyBold}>Precio/día: </Text>${" "}
             {motorcycle.rental_price}
           </Text>
         </View>

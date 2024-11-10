@@ -58,3 +58,43 @@ export const deleteMotorcycle = async (id) => {
     throw error;
   }
 };
+
+// Función para obtener las imágenes de una motocicleta
+export const getMotorcycleImages = async (motorcycleId) => {
+  try {
+    const response = await axios.get(
+      `${API_URL}/motorcycles/${motorcycleId}/images`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching motorcycle images:", error);
+    throw error;
+  }
+};
+
+// Función para agregar una imagen a la motocicleta
+export const addMotorcycleImage = async (motorcycleId, imageData) => {
+  try {
+    const response = await axios.post(
+      `${API_URL}/motorcycles/${motorcycleId}/images`,
+      imageData
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error adding image to motorcycle:", error);
+    throw error;
+  }
+};
+
+// Función para eliminar una imagen de una motocicleta
+export const deleteMotorcycleImage = async (motorcycleId, imageId) => {
+  try {
+    const response = await axios.delete(
+      `${API_URL}/motorcycles/${motorcycleId}/images/${imageId}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting motorcycle image:", error);
+    throw error;
+  }
+};

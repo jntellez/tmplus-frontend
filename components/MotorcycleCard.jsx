@@ -1,19 +1,23 @@
-// src/components/MotorcycleCard.js
 import React from "react";
 import { View, Text, Image, StyleSheet, Pressable } from "react-native";
 import colors from "../theme/colors";
-import motorcycleImg from "../assets/motorcycleImg.png";
+import motorcycleImg from "../assets/motorcycleImg.png"; // Imagen por defecto
 import { Link } from "expo-router";
+import { SERVER_URL } from "../constants";
 
 const MotorcycleCard = ({ motorcycle }) => {
+  // Asegurarse de que 'motorcycle.images' existe y tiene imágenes
+  const firstImageUrl =
+    motorcycle?.images && motorcycle.images.length > 0
+      ? { uri: `${SERVER_URL}${motorcycle.images[0]}` } // Concatenar la URL base con la imagen
+      : motorcycleImg; // Si no hay imágenes, usar la imagen por defecto
+
   return (
     <Link href={`/${motorcycle.id}`} asChild>
       <Pressable>
         <View style={styles.card}>
           <Image
-            source={
-              motorcycle.imageUrl ? { uri: motorcycle.imageUrl } : motorcycleImg
-            }
+            source={firstImageUrl} // Usar la primera imagen si existe
             style={styles.image}
             resizeMode="cover"
           />
