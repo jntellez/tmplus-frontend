@@ -1,3 +1,4 @@
+// RentalsHistory.jsx
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -6,19 +7,18 @@ import {
   StyleSheet,
   ActivityIndicator,
   Alert,
-  TouchableOpacity,
 } from "react-native";
 import { router } from "expo-router";
 import { getAllByUserId } from "../../services/rentalService";
 import colors from "../../theme/colors";
 import * as SecureStore from "expo-secure-store";
+import RentalCard from "../../components/RentalCard"; // Importa el componente
 
 const RentalsHistory = () => {
   const [rentals, setRentals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
 
-  // Fetch user data and rentals on component mount
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -56,26 +56,6 @@ const RentalsHistory = () => {
     fetchUserData();
   }, []);
 
-  const handlePress = (rentalId) => {
-    router.push(`/rental/${rentalId}`); // Navega a RentalDetail con el ID de alquiler
-  };
-
-  const renderRental = ({ item }) => (
-    <TouchableOpacity
-      onPress={() => handlePress(item.id)}
-      style={styles.rentalItem}
-    >
-      <Text style={styles.rentalText}>Cliente: {item.customer_name}</Text>
-      <Text style={styles.rentalText}>
-        Fecha de inicio: {new Date(item.start_date).toLocaleDateString()}
-      </Text>
-      <Text style={styles.rentalText}>
-        Fecha de fin: {new Date(item.end_date).toLocaleDateString()}
-      </Text>
-      <Text style={styles.rentalText}>Precio total: ${item.total_price}</Text>
-    </TouchableOpacity>
-  );
-
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Historial de Reservas</Text>
@@ -85,7 +65,12 @@ const RentalsHistory = () => {
         <FlatList
           data={rentals}
           keyExtractor={(item) => item.id.toString()}
-          renderItem={renderRental}
+          renderItem={({ item }) => (
+            <RentalCard
+              rental={item}
+              onPress={() => router.push(`/rental/${item.id}`)}
+            />
+          )}
           ListEmptyComponent={
             <Text style={styles.noRentalsText}>
               No hay reservas disponibles
@@ -109,19 +94,6 @@ const styles = StyleSheet.create({
     color: colors.primaryTextLight,
     marginBottom: 16,
     textAlign: "center",
-  },
-  rentalItem: {
-    backgroundColor: colors.cardBackground,
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 10,
-    borderColor: colors.borderColor,
-    borderWidth: 1,
-  },
-  rentalText: {
-    color: colors.primaryTextLight,
-    fontSize: 16,
-    marginBottom: 4,
   },
   noRentalsText: {
     textAlign: "center",
