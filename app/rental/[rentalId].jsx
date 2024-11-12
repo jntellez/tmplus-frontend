@@ -1,5 +1,3 @@
-// src/screens/RentalDetail.js
-
 import React, { useEffect, useState } from "react";
 import {
   ScrollView,
@@ -7,6 +5,7 @@ import {
   Text,
   Button,
   StyleSheet,
+  View,
 } from "react-native";
 import { getRentalById, updateRental } from "../../services/rentalService";
 import { getMotorcycleById } from "../../services/motorcycleService";
@@ -15,7 +14,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import RentalInfo from "../../components/RentalInfo";
 import MotorcycleCardSmall from "../../components/MotorcycleCardSmall";
-import ConfirmationModal from "../../components/ConfirmationModal"; // Importamos el modal
+import ConfirmationModal from "../../components/ConfirmationModal";
 
 const RentalDetail = () => {
   const { rentalId } = useLocalSearchParams();
@@ -25,8 +24,8 @@ const RentalDetail = () => {
   const [loading, setLoading] = useState(true);
   const [customerName, setCustomerName] = useState("");
   const [error, setError] = useState(null);
-  const [showModal, setShowModal] = useState(false); // Para controlar la visibilidad del modal
-  const [isCanceling, setIsCanceling] = useState(false); // Para controlar el estado de la cancelación
+  const [showModal, setShowModal] = useState(false);
+  const [isCanceling, setIsCanceling] = useState(false);
 
   useEffect(() => {
     const fetchRentalDetails = async () => {
@@ -58,7 +57,7 @@ const RentalDetail = () => {
   const handleCancelRental = async () => {
     if (!rental || !rental.id) return;
 
-    setIsCanceling(true); // Establecemos que se está procesando la cancelación
+    setIsCanceling(true);
 
     const rentalData = {
       ...rental,
@@ -68,9 +67,9 @@ const RentalDetail = () => {
     try {
       const updatedRental = await updateRental(rental.id, rentalData);
       setRental(updatedRental);
-      setError(null); // Resetear el mensaje de error si la cancelación fue exitosa
-      setIsCanceling(false); // Cerrar el modal si la cancelación fue exitosa
-      setShowModal(false); // Cerrar el modal después de confirmar
+      setError(null);
+      setIsCanceling(false);
+      setShowModal(false);
     } catch (error) {
       console.error("Error canceling rental:", error);
       setError("No se pudo cancelar el alquiler.");
@@ -79,11 +78,11 @@ const RentalDetail = () => {
   };
 
   const showCancelModal = () => {
-    setShowModal(true); // Mostrar modal de confirmación
+    setShowModal(true);
   };
 
   const hideCancelModal = () => {
-    setShowModal(false); // Ocultar modal si el usuario no quiere cancelar
+    setShowModal(false);
   };
 
   if (loading) {
@@ -114,16 +113,27 @@ const RentalDetail = () => {
         onPress={handleMotorcyclePress}
       />
 
-      {/* Mostrar el botón de cancelación solo si el estado es 'pending' o 'confirmed' */}
-      {(rental.status === "pending" || rental.status === "confirmed") && (
-        <Button
-          title="Cancelar Renta"
-          color={colors.dangerButton}
-          onPress={showCancelModal}
-        />
+      {/* Mostrar la tarjeta de instrucciones de entrega solo si el estado es 'confirmed' */}
+      {rental.status === "confirmed" && motorcycle.delivery_instructions && (
+        <View style={styles.fullWidthCard}>
+          <Text style={styles.cardHeader}>Instrucciones de entrega</Text>
+          <Text style={styles.cardText}>
+            {motorcycle.delivery_instructions}
+          </Text>
+        </View>
       )}
 
-      {/* Usamos el componente de modal */}
+      {(rental.status === "pending" || rental.status === "confirmed") && (
+        <>
+          <Button
+            title="Cancelar Renta"
+            color={colors.dangerButton}
+            onPress={showCancelModal}
+          />
+          <View style={styles.space}></View>
+        </>
+      )}
+
       <ConfirmationModal
         visible={showModal}
         title="¿Estás seguro de cancelar esta renta?"
@@ -154,6 +164,28 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: colors.errorText,
     fontSize: 18,
+  },
+  fullWidthCard: {
+    backgroundColor: colors.cardBackground,
+    borderRadius: 10,
+    padding: 16,
+    marginBottom: 16,
+    elevation: 3,
+    width: "100%", // Asegura que las tarjetas de esta sección ocupen todo el ancho
+  },
+  cardHeader: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: colors.linkColor,
+    marginBottom: 8,
+  },
+  cardText: {
+    fontSize: 16,
+    color: colors.lightText || "#E0E0E0",
+    marginBottom: 4,
+  },
+  space: {
+    marginBottom: 50,
   },
 });
 
