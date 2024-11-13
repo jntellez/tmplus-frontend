@@ -122,6 +122,10 @@ const Rents = () => {
     return new Date(date).toLocaleDateString("es-MX", options);
   };
 
+  // Validación de las fechas
+  const isDatesValid =
+    tempStartDate && tempEndDate && tempEndDate > tempStartDate;
+
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.title}>
@@ -148,6 +152,7 @@ const Rents = () => {
         <View style={styles.modalBackground}>
           <View style={styles.modalContent}>
             <DatePicker
+              motorcycleId={motorcycleId}
               rentalDate={tempStartDate}
               endDate={tempEndDate}
               onDateChange={(start, end) => {
@@ -163,11 +168,13 @@ const Rents = () => {
                 onPress={handleCancel}
                 color={colors.red}
               />
-              <Button
-                title="Guardar"
-                onPress={handleSaveDates}
-                color={colors.green}
-              />
+              {isDatesValid && ( // Mostrar solo si las fechas son válidas
+                <Button
+                  title="Guardar"
+                  onPress={handleSaveDates}
+                  color={colors.green}
+                />
+              )}
             </View>
           </View>
         </View>

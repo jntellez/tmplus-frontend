@@ -6,7 +6,7 @@ import { checkAuth as getAuthToken } from "./authService";
 export const getAllByUserId = async (userId) => {
   try {
     const token = await getAuthToken();
-    const response = await axios.get(`${API_URL}/rentals/${userId}`, {
+    const response = await axios.get(`${API_URL}/rentals/user/${userId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -15,6 +15,25 @@ export const getAllByUserId = async (userId) => {
   } catch (error) {
     console.error("Error fetching rentals by user ID:", error.message);
     throw new Error("Could not fetch rentals for the specified user");
+  }
+};
+
+// Función para obtener todas las reservas de una motocicleta específica
+export const getAllByMotorcycleId = async (motorcycleId) => {
+  try {
+    const token = await getAuthToken();
+    const response = await axios.get(
+      `${API_URL}/rentals/motorcycle/${motorcycleId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching rentals by motorcycle ID:", error.message);
+    throw new Error("Could not fetch rentals for the specified motorcycle");
   }
 };
 
@@ -53,13 +72,13 @@ export const createRental = async (rentalData) => {
 // Función para actualizar una reserva existente
 export const updateRental = async (id, rentalData) => {
   try {
-    const token = await getAuthToken(); // Obtener el token de autenticación
+    const token = await getAuthToken();
     const response = await axios.put(`${API_URL}/rentals/${id}`, rentalData, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
-    return response.data; // Retorna los datos actualizados de la renta
+    return response.data;
   } catch (error) {
     console.error("Error updating rental:", error.message);
     throw new Error(`Could not update rental with ID: ${id}`);

@@ -1,29 +1,82 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
   StyleSheet,
   FlatList,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import { Calendar } from "react-native-calendars";
 import colors from "../theme/colors";
+import { getAllByMotorcycleId } from "../services/rentalService"; // Importa el servicio de rentas
 
-const DatePicker = ({ rentalDate, endDate, onDateChange, onTimeChange }) => {
-  const [isStartDate, setIsStartDate] = useState(true); // Alternar entre fecha de inicio y fin
-  const [selectedStartTime, setSelectedStartTime] = useState("12:00"); // Hora de inicio por defecto
-  const [selectedEndTime, setSelectedEndTime] = useState("12:00"); // Hora de fin por defecto
+const DatePicker = ({
+  rentalDate,
+  endDate,
+  onDateChange,
+  onTimeChange,
+  motorcycleId,
+}) => {
+  const [isStartDate, setIsStartDate] = useState(true);
+  const [selectedStartTime, setSelectedStartTime] = useState("12:00");
+  const [selectedEndTime, setSelectedEndTime] = useState("12:00");
+  const [unavailableDates, setUnavailableDates] = useState({});
+  const [loading, setLoading] = useState(true); // Estado de carga
+  const [rentals, setRentals] = useState([]);
 
   const timeSlots = useCallback(() => {
     const slots = [];
-    const startTime = new Date(0, 0, 0, 0, 0); // Comienza a las 00:00
+    const startTime = new Date(0, 0, 0, 0, 0);
 
     for (let i = 0; i < 48; i++) {
-      const time = new Date(startTime.getTime() + i * 30 * 60000); // Intervalos de 30 minutos
+      const time = new Date(startTime.getTime() + i * 30 * 60000);
       slots.push(time);
     }
     return slots;
   }, []);
+
+  // Función para hacer el fetch de las rentas utilizando el servicio
+  const fetchRentals = async () => {
+    try {
+      const rentalsData = await getAllByMotorcycleId(motorcycleId); // Usamos el método getAllByMotorcycleId del servicio
+      setRentals(rentalsData);
+      setLoading(false); // Cambiar estado de carga a falso cuando los datos estén listos
+    } catch (error) {
+      console.error("Error fetching rentals: ", error);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchRentals(); // Llamada a la API para obtener las rentas
+  }, []);
+
+  useEffect(() => {
+    if (rentals.length === 0) return;
+
+    const generateUnavailableDates = () => {
+      const dates = {};
+      rentals.forEach((rental) => {
+        let currentDate = new Date(rental.start_date);
+        const endDate = new Date(rental.end_date);
+
+        while (currentDate <= endDate) {
+          const dateString = currentDate.toISOString().split("T")[0];
+          dates[dateString] = {
+            disabled: true,
+            disableTouchEvent: true,
+            selected: true,
+            selectedColor: "#D16C6C", // Rojo
+          };
+          currentDate.setDate(currentDate.getDate() + 1);
+        }
+      });
+      setUnavailableDates(dates);
+    };
+
+    generateUnavailableDates();
+  }, [rentals]);
 
   const handleTimeSelect = (time, type) => {
     const formattedTime = `${time.getHours()}:${
@@ -39,7 +92,7 @@ const DatePicker = ({ rentalDate, endDate, onDateChange, onTimeChange }) => {
   };
 
   const generateMarkedDates = (startDate, endDate) => {
-    const markedDates = {};
+    const markedDates = { ...unavailableDates };
     if (startDate) {
       markedDates[startDate.toISOString().split("T")[0]] = {
         selected: true,
@@ -57,29 +110,53 @@ const DatePicker = ({ rentalDate, endDate, onDateChange, onTimeChange }) => {
           selectedColor: `${colors.linkColor}80`,
           dotColor: `${colors.linkColor}80`,
         };
-        currentDate.setDate(currentDate.getDate() + 1); // Incrementar la fecha
+        currentDate.setDate(currentDate.getDate() + 1);
       }
     }
     return markedDates;
   };
 
   const handleDateChange = (day) => {
-    const selectedDate = new Date(day.dateString); // Convierte la fecha seleccionada
+    const selectedDate = new Date(day.dateString);
 
+    // Verificar si la fecha seleccionada está ocupada
+    if (unavailableDates[selectedDate.toISOString().split("T")[0]]) {
+      return;
+    }
+
+    // Si estamos seleccionando la fecha de inicio
     if (isStartDate) {
-      onDateChange(selectedDate, null); // Establecer la fecha de inicio
-      setIsStartDate(false); // Cambiar para seleccionar la fecha de fin
+      onDateChange(selectedDate, null);
+      setIsStartDate(false);
     } else {
-      if (selectedDate >= rentalDate) {
-        // Verificar que la fecha de fin no sea antes de la de inicio
-        onDateChange(rentalDate, selectedDate); // Establecer fecha de fin
-        setIsStartDate(true); // Volver a seleccionar la fecha de inicio la próxima vez
+      // Verificamos si la fecha de fin seleccionada está dentro de las fechas no disponibles
+      const currentStartDate = new Date(rentalDate);
+      const currentEndDate = new Date(selectedDate);
+
+      let isValid = true;
+      // Recorremos todas las fechas entre el inicio y el final para ver si hay alguna no disponible
+      let checkDate = new Date(currentStartDate);
+      while (checkDate <= currentEndDate) {
+        if (unavailableDates[checkDate.toISOString().split("T")[0]]) {
+          isValid = false;
+          break;
+        }
+        checkDate.setDate(checkDate.getDate() + 1);
+      }
+
+      if (isValid) {
+        onDateChange(rentalDate, selectedDate); // Si es válido, asignamos la fecha de fin
+        setIsStartDate(true); // Volvemos a seleccionar fecha de inicio
       } else {
-        onDateChange(selectedDate, null); // Si la fecha de fin es antes de la de inicio, actualizar fecha de inicio
-        setIsStartDate(false); // Cambiar para seleccionar la fecha de fin
+        onDateChange(selectedDate, null); // Se restablece la fecha de fin
+        setIsStartDate(true); // Volvemos a poner la fecha de inicio
       }
     }
   };
+
+  if (loading) {
+    return <ActivityIndicator size="large" color={colors.linkColor} />;
+  }
 
   return (
     <View style={styles.datePickerContainer}>
@@ -172,18 +249,13 @@ const DatePicker = ({ rentalDate, endDate, onDateChange, onTimeChange }) => {
 
 const styles = StyleSheet.create({
   datePickerContainer: {
-    marginBottom: 16,
+    flex: 1,
+    padding: 20,
     backgroundColor: colors.cardBackground,
-    padding: 10,
-    borderRadius: 8,
-    borderColor: colors.borderColor,
-    borderWidth: 1,
   },
   dateTimeRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 16,
   },
   dateText: {
     fontSize: 16,
@@ -191,30 +263,24 @@ const styles = StyleSheet.create({
   },
   timeRow: {
     flexDirection: "row",
-    marginTop: 16,
-    alignItems: "center",
-    justifyContent: "space-between",
+    marginTop: 10,
   },
   timeLabel: {
-    fontSize: 16,
-    color: colors.primaryTextLight,
-    marginRight: 8,
+    marginBottom: 5,
+    color: colors.secondaryTextLight,
   },
   timeSlot: {
+    marginRight: 10,
     padding: 8,
-    backgroundColor: colors.secondaryBackground,
-    borderRadius: 8,
-    marginHorizontal: 4,
-    borderWidth: 1, // Borde añadido
-    borderColor: colors.borderColor, // Color del borde
+    borderWidth: 1,
+    borderColor: colors.borderColor,
+    borderRadius: 4,
   },
   selectedTimeSlot: {
     backgroundColor: colors.linkColor,
-    borderColor: colors.linkColor, // Asegura que el borde también cambie al seleccionarlo
   },
   timeText: {
     color: colors.primaryTextLight,
-    fontSize: 14,
   },
 });
 
