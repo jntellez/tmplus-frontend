@@ -16,7 +16,7 @@ import { createRental } from "../../../services/rentalService";
 import colors from "../../../theme/colors";
 import * as SecureStore from "expo-secure-store";
 import { useRouter } from "expo-router";
-import DatePicker from "../../../components/DatePicker"; // Importamos el nuevo componente DatePicker
+import DatePicker from "../../../components/DatePicker";
 
 const Rents = () => {
   const { motorcycleId } = useLocalSearchParams();
@@ -30,20 +30,19 @@ const Rents = () => {
   const [tempEndDate, setTempEndDate] = useState(endDate);
   const router = useRouter();
 
-  // Función para agregar un día a la fecha
+  const dailyRate = 100; // Precio fijo por día
+
   const addOneDay = (date) => {
     const newDate = new Date(date);
-    newDate.setDate(newDate.getDate() + 1); // Suma 1 día
+    newDate.setDate(newDate.getDate() + 1);
     return newDate;
   };
 
-  // Función para calcular la duración entre las fechas
   const calculateDuration = (startDate, endDate) => {
     const diffTime = Math.abs(endDate - startDate);
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // Duración en días
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   };
 
-  // Función para crear la renta
   const handleCreateRental = async () => {
     if (!rentalDate || !endDate) {
       Alert.alert(
@@ -64,7 +63,7 @@ const Rents = () => {
     setLoading(true);
 
     const duration = calculateDuration(rentalDate, endDate);
-    const totalPrice = 100 * duration; // Precio fijo por día
+    const totalPrice = dailyRate * duration;
     const userData = JSON.parse(await SecureStore.getItemAsync("user"));
 
     try {
@@ -79,7 +78,6 @@ const Rents = () => {
       };
 
       const response = await createRental(rentalData);
-
       router.replace("/rentalsHistory");
       setTimeout(() => {
         router.push(`/rental/${response.id}`);
@@ -92,39 +90,30 @@ const Rents = () => {
     }
   };
 
-  // Función para manejar el cambio de hora
-  const handleTimeChange = (time, type) => {
-    if (type === "start") {
-      setStartTime(time);
-    } else if (type === "end") {
-      setEndTime(time);
-    }
-  };
-
-  // Función para guardar las fechas con el incremento de un día
   const handleSaveDates = () => {
-    setRentalDate(addOneDay(tempStartDate)); // Se le agrega un día a la fecha de inicio
-    setEndDate(addOneDay(tempEndDate)); // Se le agrega un día a la fecha de fin
+    setRentalDate(addOneDay(tempStartDate));
+    setEndDate(addOneDay(tempEndDate));
     setModalVisible(false);
   };
 
-  // Función para cancelar la selección de fechas
   const handleCancel = () => {
     setTempStartDate(rentalDate);
     setTempEndDate(endDate);
     setModalVisible(false);
   };
 
-  // Formato de fecha
   const formatDate = (date) => {
     if (!date) return "No seleccionada";
     const options = { year: "numeric", month: "long", day: "numeric" };
     return new Date(date).toLocaleDateString("es-MX", options);
   };
 
-  // Validación de las fechas
   const isDatesValid =
     tempStartDate && tempEndDate && tempEndDate > tempStartDate;
+
+  const duration =
+    rentalDate && endDate ? calculateDuration(rentalDate, endDate) : 0;
+  const totalPrice = duration * dailyRate;
 
   return (
     <ScrollView style={styles.container}>
@@ -143,6 +132,13 @@ const Rents = () => {
             : "Selecciona las fechas"}
         </Text>
       </TouchableOpacity>
+
+      <View style={styles.card}>
+        <Text style={styles.cardText}>Precio por día: ${dailyRate} MXN</Text>
+        <Text style={styles.cardText}>Días totales: {duration}</Text>
+        <Text style={styles.cardText}>Precio total: ${totalPrice} MXN</Text>
+      </View>
+
       <Modal
         animationType="slide"
         transparent={true}
@@ -159,26 +155,25 @@ const Rents = () => {
                 setTempStartDate(start);
                 setTempEndDate(end);
               }}
-              onTimeChange={handleTimeChange}
             />
-            {/* Botones de Cancelar y Guardar */}
             <View style={styles.modalButtons}>
               <Button
                 title="Cancelar"
                 onPress={handleCancel}
-                color={colors.red}
+                color={colors.dangerButton}
               />
-              {isDatesValid && ( // Mostrar solo si las fechas son válidas
+              {isDatesValid && (
                 <Button
                   title="Guardar"
                   onPress={handleSaveDates}
-                  color={colors.green}
+                  color={colors.primaryButton}
                 />
               )}
             </View>
           </View>
         </View>
       </Modal>
+
       {loading ? (
         <ActivityIndicator size="large" color={colors.linkColor} />
       ) : (
@@ -210,11 +205,13 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 16,
     alignItems: "center",
+    borderColor: colors.borderColor,
+    borderWidth: 1,
   },
   cardText: {
     fontSize: 18,
     color: colors.primaryTextLight,
-    textAlign: "center", // Centra el texto
+    textAlign: "center",
   },
   modalBackground: {
     flex: 1,
@@ -233,8 +230,8 @@ const styles = StyleSheet.create({
   },
   modalButtons: {
     flexDirection: "row",
-    justifyContent: "space-evenly", // Esto asegura que los botones estén pegados al DatePicker
-    marginTop: 10, // Ajusta el margen entre el DatePicker y los botones
+    justifyContent: "space-evenly",
+    marginTop: 10,
     marginBottom: 200,
   },
 });
