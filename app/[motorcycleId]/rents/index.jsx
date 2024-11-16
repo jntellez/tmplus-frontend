@@ -73,8 +73,6 @@ const Rents = () => {
         start_date: rentalDate.toISOString(),
         end_date: endDate.toISOString(),
         total_price: totalPrice,
-        start_time: startTime,
-        end_time: endTime,
       };
 
       const response = await createRental(rentalData);

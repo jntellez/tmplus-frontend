@@ -15,6 +15,7 @@ import * as SecureStore from "expo-secure-store";
 import RentalInfo from "../../components/RentalInfo";
 import MotorcycleCardSmall from "../../components/MotorcycleCardSmall";
 import ConfirmationModal from "../../components/ConfirmationModal";
+import PaymentButton from "../../components/PaymentButton";
 
 const RentalDetail = () => {
   const { rentalId } = useLocalSearchParams();
@@ -22,7 +23,7 @@ const RentalDetail = () => {
   const [rental, setRental] = useState(null);
   const [motorcycle, setMotorcycle] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [customerName, setCustomerName] = useState("");
+  const [user, setUser] = useState("");
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [isCanceling, setIsCanceling] = useState(false);
@@ -30,9 +31,8 @@ const RentalDetail = () => {
   useEffect(() => {
     const fetchRentalDetails = async () => {
       try {
-        const storedUser = await SecureStore.getItemAsync("user");
-        const storedName = storedUser ? JSON.parse(storedUser).name : null;
-        setCustomerName(storedName || "Cliente Desconocido");
+        const storedUser = JSON.parse(await SecureStore.getItemAsync("user"));
+        setUser(storedUser || "Cliente Desconocido");
 
         const rentalData = await getRentalById(rentalId);
         setRental(rentalData);
@@ -107,11 +107,23 @@ const RentalDetail = () => {
 
   return (
     <ScrollView style={styles.container}>
-      <RentalInfo rental={rental} customerName={customerName} />
+      <RentalInfo rental={rental} customerName={user.name} />
       <MotorcycleCardSmall
         motorcycle={motorcycle}
         onPress={handleMotorcyclePress}
       />
+
+      {/* Boton de Pago */}
+      {rental.status === "pending" && (
+        <View style={styles.paymentButtonContainer}>
+          <PaymentButton
+            rental={rental}
+            user={user}
+            motorcycle={motorcycle}
+            disabled={!rental.status === "pending"}
+          />
+        </View>
+      )}
 
       {/* Mostrar la tarjeta de instrucciones de entrega solo si el estado es 'confirmed' */}
       {rental.status === "confirmed" && motorcycle.delivery_instructions && (
@@ -186,6 +198,9 @@ const styles = StyleSheet.create({
   },
   space: {
     marginBottom: 50,
+  },
+  paymentButtonContainer: {
+    marginVertical: 10,
   },
 });
 
