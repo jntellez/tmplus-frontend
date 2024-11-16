@@ -8,15 +8,14 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   Modal,
-  SafeAreaView,
   ScrollView,
 } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { createRental } from "../../../services/rentalService";
 import colors from "../../../theme/colors";
-import * as SecureStore from "expo-secure-store";
 import { useRouter } from "expo-router";
 import DatePicker from "../../../components/DatePicker";
+import { getStorageItem } from "../../../services/storageService";
 
 const Rents = () => {
   const { motorcycleId } = useLocalSearchParams();
@@ -64,7 +63,7 @@ const Rents = () => {
 
     const duration = calculateDuration(rentalDate, endDate);
     const totalPrice = dailyRate * duration;
-    const userData = JSON.parse(await SecureStore.getItemAsync("user"));
+    const userData = JSON.parse(await getStorageItem("user"));
 
     try {
       const rentalData = {

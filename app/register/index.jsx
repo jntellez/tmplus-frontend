@@ -9,8 +9,8 @@ import {
 } from "react-native";
 import { register, parseJwt } from "../../services/authService"; // Importar el servicio de autenticación
 import { useRouter } from "expo-router";
-import colors from "../../theme/colors"; // Importa los colores del tema
-import * as SecureStore from "expo-secure-store";
+import colors from "../../theme/colors";
+import { setStorageItem } from "../../services/storageService";
 import { getUserData } from "../../services/userService"; // Servicio para obtener datos del usuario
 
 export default function RegisterScreen() {
@@ -35,8 +35,8 @@ export default function RegisterScreen() {
           const { id } = parseJwt(token);
           const userData = await getUserData(id);
 
-          // Guardar los datos del usuario en SecureStore
-          await SecureStore.setItemAsync("user", JSON.stringify(userData));
+          // Guardar los datos del usuario en el storage
+          setStorageItem("user", JSON.stringify(userData));
 
           // Redirigir al Home
           router.replace("/home");

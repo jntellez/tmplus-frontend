@@ -6,13 +6,12 @@ import {
   Text,
   ActivityIndicator,
   StyleSheet,
-  Alert,
 } from "react-native";
 import { login, parseJwt } from "../../services/authService";
 import { useRouter } from "expo-router";
 import colors from "../../theme/colors";
 import { getUserData } from "../../services/userService";
-import * as SecureStore from "expo-secure-store";
+import { setStorageItem } from "../../services/storageService";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
@@ -38,7 +37,7 @@ export default function LoginScreen() {
         const { id } = parseJwt(token);
         const userData = await getUserData(id);
 
-        await SecureStore.setItemAsync("user", JSON.stringify(userData));
+        setStorageItem("user", JSON.stringify(userData));
 
         router.replace("/home");
       } else {

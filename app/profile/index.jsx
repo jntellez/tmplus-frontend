@@ -1,8 +1,9 @@
 import React from "react";
-import { ScrollView, StyleSheet } from "react-native";
+import { Button, ScrollView, StyleSheet } from "react-native";
 import LabelProfileCard from "../../components/LabelProfileCard"; // Importamos el componente para las tarjetas
 import ProfileHeader from "../../components/ProfileHeader"; // Importamos el nuevo componente
 import colors from "../../theme/colors"; // Asegúrate de que los colores estén bien definidos en tu tema
+import { logout } from "../../services/authService";
 
 export default function ProfileScreen() {
   const user = {
@@ -47,6 +48,8 @@ export default function ProfileScreen() {
         value={user.sellerCode}
         onEdit={(newValue) => handleEdit("sellerCode", newValue)}
       />
+      {/* Botón de Cerrar Sesión */}
+      <Button title="Cerrar Sesión" onPress={logout} color={colors.cancelled} />
     </ScrollView>
   );
 }

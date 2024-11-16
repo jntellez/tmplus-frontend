@@ -12,11 +12,11 @@ import { getRentalById, updateRental } from "../../services/rentalService";
 import { getMotorcycleById } from "../../services/motorcycleService";
 import colors from "../../theme/colors";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import * as SecureStore from "expo-secure-store";
 import RentalInfo from "../../components/RentalInfo";
 import MotorcycleCardSmall from "../../components/MotorcycleCardSmall";
 import ConfirmationModal from "../../components/ConfirmationModal";
 import PaymentButton from "../../components/PaymentButton";
+import { getStorageItem } from "../../services/storageService";
 
 // Agregar estado de animación
 const RentalDetail = () => {
@@ -40,7 +40,7 @@ const RentalDetail = () => {
 
   const fetchRentalDetails = async () => {
     try {
-      const storedUser = JSON.parse(await SecureStore.getItemAsync("user"));
+      const storedUser = JSON.parse(await getStorageItem("user"));
       setUser(storedUser || "Cliente Desconocido");
 
       const rentalData = await getRentalById(rentalId);

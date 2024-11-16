@@ -1,21 +1,11 @@
 import React from "react";
-import { View, Button, StyleSheet } from "react-native";
-import * as SecureStore from "expo-secure-store";
+import { View, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import colors from "../../theme/colors";
 import ProfileCard from "../../components/more/ProfileCard";
 
 export default function MoreScreen() {
   const router = useRouter();
-
-  const handleLogout = async () => {
-    await SecureStore.deleteItemAsync("authToken"); // Elimina el token
-    router.replace("/login"); // Redirige al login
-  };
-
-  const handleViewProfile = () => {
-    router.push("/profile"); // Navega a la ruta de perfil
-  };
 
   const user = {
     name: "Juan Téllez Tinajero", // Datos del usuario
@@ -28,14 +18,7 @@ export default function MoreScreen() {
       <ProfileCard
         name={user.name}
         email={user.email}
-        onViewProfile={handleViewProfile}
-      />
-
-      {/* Botón de Cerrar Sesión */}
-      <Button
-        title="Cerrar Sesión"
-        onPress={handleLogout}
-        color={colors.primaryButton}
+        onViewProfile={() => router.push("/profile")}
       />
     </View>
   );

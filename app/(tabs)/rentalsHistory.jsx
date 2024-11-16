@@ -11,8 +11,8 @@ import {
 import { router } from "expo-router";
 import { getAllByUserId } from "../../services/rentalService";
 import colors from "../../theme/colors";
-import * as SecureStore from "expo-secure-store";
-import RentalCard from "../../components/RentalCard"; // Importa el componente
+import { getStorageItem } from "../../services/storageService";
+import RentalCard from "../../components/RentalCard";
 
 const RentalsHistory = () => {
   const [rentals, setRentals] = useState([]);
@@ -22,7 +22,7 @@ const RentalsHistory = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const userData = await SecureStore.getItemAsync("user");
+        const userData = await getStorageItem("user");
         if (userData) {
           const parsedUser = JSON.parse(userData);
           setUser(parsedUser);
