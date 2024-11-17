@@ -7,10 +7,24 @@ import {
   StyleSheet,
 } from "react-native";
 import colors from "../theme/colors"; // Asegúrate de que los colores estén bien definidos en tu tema
+import { updateUserData } from "../services/userService";
 
-export default function LabelProfileCard({ label, value, onEdit }) {
+export default function LabelProfileCard({
+  label,
+  value,
+  key,
+  userId,
+  noShow,
+}) {
   const [isEditing, setIsEditing] = useState(false); // Estado para controlar si estamos en modo edición
   const [inputValue, setInputValue] = useState(value); // Estado para controlar el valor del input
+
+  const handleUpdateValue = async (value) => {
+    try {
+      const data = { [key]: value };
+      const response = await updateUserData(userId, data);
+    } catch (error) {}
+  };
 
   const handleEdit = () => {
     if (isEditing) {
@@ -42,10 +56,13 @@ export default function LabelProfileCard({ label, value, onEdit }) {
           />
         ) : (
           // Si no estamos editando, mostramos el valor como texto
-          <Text style={styles.value}>{inputValue}</Text>
+          <Text style={styles.value}>{inputValue || "Indefinido"}</Text>
         )}
       </View>
-      <TouchableOpacity onPress={handleEdit} style={styles.editButton}>
+      <TouchableOpacity
+        onPress={!isEditing ? handleEdit : handleUpdateValue}
+        style={styles.editButton}
+      >
         <Text style={styles.editButtonText}>
           {isEditing ? "Confirmar" : "Editar"}
         </Text>

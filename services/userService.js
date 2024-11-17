@@ -18,3 +18,19 @@ export const getUserData = async (id) => {
     throw error;
   }
 };
+
+// Función para actualizar los datos del usuario
+export const updateUserData = async (id, updatedData) => {
+  try {
+    const token = await checkAuth();
+    const response = await axios.put(`${API_URL}/users/${id}`, updatedData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error al actualizar los datos del usuario:", error);
+    throw error;
+  }
+};
