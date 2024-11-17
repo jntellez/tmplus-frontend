@@ -1,53 +1,78 @@
-import React from "react";
-import { Button, ScrollView, StyleSheet } from "react-native";
+import React, { useEffect, useState } from "react";
+import { Button, ScrollView, StyleSheet, Text } from "react-native";
 import LabelProfileCard from "../../components/LabelProfileCard"; // Importamos el componente para las tarjetas
 import ProfileHeader from "../../components/ProfileHeader"; // Importamos el nuevo componente
 import colors from "../../theme/colors"; // Asegúrate de que los colores estén bien definidos en tu tema
 import { logout } from "../../services/authService";
+import { getStorageItem } from "../../services/storageService";
 
 export default function ProfileScreen() {
-  const user = {
-    name: "Juan Téllez Tinajero", // Ejemplo de datos
-    email: "juan@example.com",
-    password: "********", // La contraseña oculta
-    sellerCode: "12345", // Código de vendedor oculto
-    joinDate: "2024-11-09 13:00:08", // Fecha de creación de la cuenta
-  };
+  const [user, setUser] = useState({});
+  const [loading, setLoading] = useState(true);
 
-  // Convertir la fecha de creación a un objeto Date
-  const joinDate = new Date(user.joinDate);
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const storageUser = await getStorageItem("user");
+        console.log(storageUser); // Para depuración
+        setUser(storageUser);
+      } catch (error) {
+        console.error("Error al obtener los datos del usuario:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUserData();
+  }, []);
 
-  const handleEdit = (field, newValue) => {
-    console.log(`Editando ${field} con valor ${newValue}`);
-    // Lógica para editar los valores (puedes llamar a una API aquí, por ejemplo)
-  };
+  if (loading) {
+    return <Text style={styles.loadingText}>Cargando...</Text>;
+  }
 
   return (
     <ScrollView style={styles.container}>
       {/* Usamos el componente ProfileHeader para mostrar la imagen y la fecha */}
-      <ProfileHeader joinDate={joinDate} />
+      <ProfileHeader joinDate={new Date(user.registration_date)} />
 
       {/* Usamos el componente LabelProfileCard para mostrar la información */}
+
       <LabelProfileCard
         label="Nombre"
         value={user.name}
-        onEdit={(newValue) => handleEdit("name", newValue)}
+        key="name"
+        userId={user.id}
       />
       <LabelProfileCard
         label="Correo"
         value={user.email}
-        onEdit={(newValue) => handleEdit("email", newValue)}
+        key="email"
+        userId={user.id}
       />
       <LabelProfileCard
         label="Contraseña"
-        value={user.password}
-        onEdit={(newValue) => handleEdit("password", newValue)}
+        value="********"
+        key="password"
+        userId={user.id}
+      />
+      <LabelProfileCard
+        label="Teléfono"
+        value={user.phone || "No registrado"}
+        key="phone"
+        userId={user.id}
+      />
+      <LabelProfileCard
+        label="Dirección"
+        value={user.address || "No registrada"}
+        key="address"
+        userId={user.id}
       />
       <LabelProfileCard
         label="Código de Vendedor"
-        value={user.sellerCode}
-        onEdit={(newValue) => handleEdit("sellerCode", newValue)}
+        value={user.mp_access_token || "No disponible"}
+        key="mp_access_token"
+        userId={user.id}
       />
+
       {/* Botón de Cerrar Sesión */}
       <Button title="Cerrar Sesión" onPress={logout} color={colors.cancelled} />
     </ScrollView>
@@ -59,5 +84,11 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     backgroundColor: colors.background,
+  },
+  loadingText: {
+    textAlign: "center",
+    marginTop: 20,
+    fontSize: 16,
+    color: colors.primary,
   },
 });
