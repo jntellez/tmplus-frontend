@@ -80,6 +80,23 @@ export const checkAuth = async () => {
   }
 };
 
+// Funcion para validar la contraseña
+export const validatePassword = async (password) => {
+  try {
+    const email = JSON.parse(await getStorageItem("user")).email;
+    const response = await login(email, password);
+
+    if (response) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    throw error;
+  }
+};
+
 // Función para hacer logout
 export const logout = async () => {
   try {

@@ -4,17 +4,19 @@ import {
   Button,
   ScrollView,
   StyleSheet,
-  Text,
+  View,
 } from "react-native";
-import LabelProfileCard from "../../components/LabelProfileCard"; // Importamos el componente para las tarjetas
-import ProfileHeader from "../../components/ProfileHeader"; // Importamos el nuevo componente
-import colors from "../../theme/colors"; // Asegúrate de que los colores estén bien definidos en tu tema
+import LabelProfileCard from "../../components/LabelProfileCard";
+import ProfileHeader from "../../components/ProfileHeader";
+import ConfirmationModal from "../../components/ConfirmationModal";
+import colors from "../../theme/colors";
 import { logout } from "../../services/authService";
 import { getStorageItem } from "../../services/storageService";
 
 export default function ProfileScreen() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -34,50 +36,63 @@ export default function ProfileScreen() {
 
   return (
     <ScrollView style={styles.container}>
-      {/* Usamos el componente ProfileHeader para mostrar la imagen y la fecha */}
       <ProfileHeader joinDate={new Date(user.registration_date)} />
-
-      {/* Usamos el componente LabelProfileCard para mostrar la información */}
       <LabelProfileCard
         label="Nombre"
         value={user.name}
-        key="name"
+        propName="name"
         userId={user.id}
       />
       <LabelProfileCard
         label="Correo"
         value={user.email}
-        key="email"
+        propName="email"
         userId={user.id}
       />
       <LabelProfileCard
         label="Contraseña"
-        value={user.password}
-        key="password"
+        value=""
+        propName="password"
         userId={user.id}
+        password
         noShow
       />
       <LabelProfileCard
         label="Teléfono"
         value={user.phone}
-        key="phone"
+        propName="phone"
         userId={user.id}
       />
       <LabelProfileCard
         label="Dirección"
         value={user.address}
-        key="address"
+        propName="address"
         userId={user.id}
       />
       <LabelProfileCard
         label="Código de Vendedor"
         value={user.mp_access_token}
-        key="mp_access_token"
+        propName="mp_access_token"
         userId={user.id}
-        noShow
       />
-      {/* Botón de Cerrar Sesión */}
-      <Button title="Cerrar Sesión" onPress={logout} color={colors.cancelled} />
+      <Button
+        title="Cerrar Sesión"
+        onPress={() => setIsModalVisible(true)}
+        color={colors.cancelled}
+      />
+      <View style={{ paddingVertical: 150 }}></View>
+
+      <ConfirmationModal
+        visible={isModalVisible}
+        title="¿Estás seguro de que deseas cerrar sesión?"
+        onCancel={() => setIsModalVisible(false)}
+        onConfirm={() => {
+          setIsModalVisible(false);
+          logout();
+        }}
+        cancelButtonText="Cancelar"
+        confirmButtonText="Cerrar Sesión"
+      />
     </ScrollView>
   );
 }
@@ -87,11 +102,5 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     backgroundColor: colors.background,
-  },
-  loadingText: {
-    textAlign: "center",
-    marginTop: 20,
-    fontSize: 16,
-    color: colors.primary,
   },
 });

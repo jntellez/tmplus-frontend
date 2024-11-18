@@ -34,3 +34,18 @@ export const updateUserData = async (id, updatedData) => {
     throw error;
   }
 };
+
+export const updateUserPassword = async (id, data) => {
+  try {
+    const token = await checkAuth();
+    const response = await axios.put(`${API_URL}/users/${id}/password`, data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error al actualizar la contraseña del usuario:", error);
+    throw error;
+  }
+};
