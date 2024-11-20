@@ -1,8 +1,10 @@
 import React from "react";
-import { View, StyleSheet } from "react-native";
+import { StyleSheet, ScrollView } from "react-native";
 import { useRouter } from "expo-router";
 import colors from "../../theme/colors";
 import ProfileCard from "../../components/more/ProfileCard";
+import OptionCard from "../../components/more/OptionCard";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function MoreScreen() {
   const router = useRouter();
@@ -13,14 +15,23 @@ export default function MoreScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       {/* Componente de tarjeta de perfil */}
       <ProfileCard
         name={user.name}
         email={user.email}
         onViewProfile={() => router.push("/profile")}
       />
-    </View>
+
+      {/* Opciones de la disponibles */}
+      <OptionCard
+        title="¿Cómo ser arrendador?"
+        icon={({ size, color }) => (
+          <Ionicons name="help-circle-outline" color={color} size={size} />
+        )}
+        route="/more/upgradeToLandlord"
+      />
+    </ScrollView>
   );
 }
 

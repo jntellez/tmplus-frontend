@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Alert,
   Linking,
+  Platform,
 } from "react-native";
 import colors from "../theme/colors";
 import { createPayment } from "../services/paymentService";
@@ -27,6 +28,7 @@ const PaymentButton = ({ rental, user, motorcycle, disabled }) => {
       },
     },
     rentalId: rental.id,
+    ownerId: motorcycle.user_id,
     commission: rental.total_price * 0.08, // 8% del precio total
   };
 
@@ -42,16 +44,22 @@ const PaymentButton = ({ rental, user, motorcycle, disabled }) => {
             {
               text: "Ir al pago",
               onPress: async () => {
-                const supported = await Linking.canOpenURL(
-                  paymentData.sandbox_initial_point
-                );
-                if (supported) {
-                  await Linking.openURL(paymentData.sandbox_initial_point);
+                const url = paymentData.sandbox_initial_point;
+
+                if (Platform.OS === "web") {
+                  // Redirección en navegadores
+                  window.location.href = url;
                 } else {
-                  Alert.alert(
-                    "Error",
-                    "No se puede abrir la URL de Mercado Pago."
-                  );
+                  // Verifica si se puede abrir la URL en móvil
+                  const supported = await Linking.canOpenURL(url);
+                  if (supported) {
+                    await Linking.openURL(url);
+                  } else {
+                    Alert.alert(
+                      "Error",
+                      "No se puede abrir la URL de Mercado Pago."
+                    );
+                  }
                 }
               },
             },
