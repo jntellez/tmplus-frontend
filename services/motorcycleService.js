@@ -1,5 +1,6 @@
 import axios from "axios";
 import { API_URL } from "../constants";
+import { checkAuth } from "./authService";
 
 export const getMotorcycles = async (page = 1, limit = 5) => {
   try {
@@ -26,10 +27,49 @@ export const getMotorcycleById = async (id) => {
 // Función para crear una nueva moto
 export const createMotorcycle = async (motorcycleData) => {
   try {
-    const response = await axios.post(`${API_URL}/motorcycles`, motorcycleData);
+    const token = await checkAuth();
+    const response = await axios.post(
+      `${API_URL}/motorcycles`,
+      motorcycleData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
     return response.data;
   } catch (error) {
     console.error("Error creating motorcycle:", error);
+    throw error;
+  }
+};
+
+// Función para crear la motocicleta y luego agregar las imágenes
+export const createMotorcycleWithImages = async (motorcycleData, images) => {
+  try {
+    // Paso 1: Crear la motocicleta
+    const motorcycle = await createMotorcycle(motorcycleData);
+    console.log(motorcycle);
+    // Paso 2: Preparar el FormData para las imágenes
+    const formData = new FormData();
+    images.forEach((uri) => {
+      const filename = uri.split("/").pop();
+      const type = `image/${filename.split(".").pop()}`;
+      formData.append("images", {
+        uri,
+        name: filename,
+        type,
+      });
+    });
+
+    // Paso 3: Agregar las imágenes asociadas a la motocicleta
+    if (formData.has("images")) {
+      const imagesResponse = await addMotorcycleImage(motorcycle.id, formData);
+    }
+
+    return motorcycle; // Retorna la motocicleta creada
+  } catch (error) {
+    console.error("Error creating motorcycle and adding images:", error);
     throw error;
   }
 };
@@ -75,9 +115,15 @@ export const getMotorcycleImages = async (motorcycleId) => {
 // Función para agregar una imagen a la motocicleta
 export const addMotorcycleImage = async (motorcycleId, imageData) => {
   try {
+    const token = await checkAuth();
     const response = await axios.post(
       `${API_URL}/motorcycles/${motorcycleId}/images`,
-      imageData
+      imageData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
     );
     return response.data;
   } catch (error) {

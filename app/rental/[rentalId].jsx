@@ -236,6 +236,8 @@ const styles = StyleSheet.create({
   },
   loadingContainer: {
     flex: 1,
+    minHeight: 100,
+    backgroundColor: colors.background,
     justifyContent: "center",
     alignItems: "center",
   },
