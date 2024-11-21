@@ -14,8 +14,10 @@ import { useRouter } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
 import colors from "../../theme/colors";
 import {
-  createMotorcycleWithImages,
+  deleteMotorcycleImage,
   getMotorcycleById,
+  getMotorcycleImages,
+  updateMotorcycleWithImages,
 } from "../../services/motorcycleService";
 import { Ionicons } from "@expo/vector-icons";
 import { getStorageItem } from "../../services/storageService";
@@ -43,9 +45,9 @@ export default function CreateMotorcycle() {
       setRentalPrice(motorcycleData.rental_price);
       setDescription(motorcycleData.description);
       setDeliveryInstructions(motorcycleData.delivery_instructions);
-      setImages(motorcycleData.images);
+      const imagesData = await getMotorcycleImages(motorcycleId);
+      setImages(imagesData);
     };
-    console.log(images);
     setMotorcycleData(motorcycleId);
   }, []);
 
@@ -57,14 +59,28 @@ export default function CreateMotorcycle() {
     });
 
     if (!result.canceled) {
-      const selectedImages = result.assets.map((asset) => asset.uri);
+      const selectedImages = result.assets.map((asset) => ({
+        uri: asset.uri,
+      }));
       setImages([...images, ...selectedImages]);
     }
   };
 
-  const handleRemoveImage = (index) => {
-    const updatedImages = images.filter((_, i) => i !== index);
-    setImages(updatedImages);
+  const handleRemoveImage = async (index, imageId) => {
+    try {
+      // Verificar si la imagen tiene un ID asociado (está almacenada en el servidor)
+      if (imageId) {
+        // Llamar a la API para eliminar la imagen del servidor
+        await deleteMotorcycleImage(imageId);
+      }
+
+      // Actualizar las imágenes locales
+      const updatedImages = images.filter((_, i) => i !== index);
+      setImages(updatedImages);
+    } catch (error) {
+      console.error("Error al eliminar la imagen:", error);
+      alert("Hubo un error al eliminar la imagen. Inténtalo de nuevo.");
+    }
   };
 
   const handleSubmit = async () => {
@@ -79,7 +95,6 @@ export default function CreateMotorcycle() {
     }
 
     const motorcycleData = {
-      user_id: JSON.parse(await getStorageItem("user")).id,
       brand,
       model,
       year: parseInt(year, 10),
@@ -90,7 +105,8 @@ export default function CreateMotorcycle() {
 
     try {
       // Llamada para crear la motocicleta y luego agregar las imágenes
-      const newMotorcycle = await createMotorcycleWithImages(
+      const newMotorcycle = await updateMotorcycleWithImages(
+        motorcycleId,
         motorcycleData,
         images
       );
@@ -182,15 +198,19 @@ export default function CreateMotorcycle() {
           </TouchableOpacity>
         </View>
         <ScrollView horizontal style={styles.imagePreviewContainer}>
-          {images.map((uri, index) => (
+          {images.map((image, index) => (
             <View key={index} style={styles.imagePreviewWrapper}>
               <Image
-                source={{ uri: `${SERVER_URL}${uri}` }}
+                source={{
+                  uri: image?.image_url
+                    ? `${SERVER_URL}${image?.image_url}`
+                    : `${image?.uri}`,
+                }}
                 style={styles.imagePreview}
               />
               <TouchableOpacity
                 style={styles.removeButton}
-                onPress={() => handleRemoveImage(index)}
+                onPress={() => handleRemoveImage(index, image.id)}
               >
                 <Ionicons
                   name="remove-circle-outline"
@@ -203,7 +223,11 @@ export default function CreateMotorcycle() {
         </ScrollView>
       </View>
 
-      <Button title="Publicar" onPress={handleSubmit} color={colors.primary} />
+      <Button
+        title="Actualizar"
+        onPress={handleSubmit}
+        color={colors.pending}
+      />
       <View style={{ marginVertical: 18 }}></View>
     </ScrollView>
   );

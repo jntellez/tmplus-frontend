@@ -110,6 +110,41 @@ export const updateMotorcycle = async (id, motorcycleData) => {
   }
 };
 
+// Función para crear la motocicleta y luego agregar las imágenes
+export const updateMotorcycleWithImages = async (
+  motorcycleId,
+  motorcycleData,
+  images
+) => {
+  try {
+    // Paso 1: Crear la motocicleta
+    const motorcycle = await updateMotorcycle(motorcycleId, motorcycleData);
+    // Paso 2: Preparar el FormData para las imágenes
+    const formData = new FormData();
+    images.forEach((image) => {
+      if (image?.uri) {
+        const filename = image.uri.split("/").pop();
+        const type = `image/${filename.split(".").pop()}`;
+        formData.append("images", {
+          uri: image.uri,
+          name: filename,
+          type,
+        });
+      }
+    });
+
+    // Paso 3: Agregar las imágenes asociadas a la motocicleta
+    if (formData.has("images")) {
+      const imagesResponse = await addMotorcycleImage(motorcycle.id, formData);
+    }
+
+    return motorcycle; // Retorna la motocicleta creada
+  } catch (error) {
+    console.error("Error creating motorcycle and adding images:", error);
+    throw error;
+  }
+};
+
 // Función para eliminar una moto
 export const deleteMotorcycle = async (id) => {
   try {

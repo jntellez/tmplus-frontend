@@ -11,8 +11,13 @@ export default function MoreScreen() {
   const router = useRouter();
   const [user, setUser] = useState({});
 
-  useEffect(async () => {
-    setUser(JSON.parse(await getStorageItem("user")));
+  useEffect(() => {
+    const getUserData = async () => {
+      const userData = JSON.parse(await getStorageItem("user"));
+      setUser(userData);
+    };
+
+    getUserData();
   }, []);
 
   return (
