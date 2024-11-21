@@ -14,6 +14,23 @@ export const getMotorcycles = async (page = 1, limit = 5) => {
   }
 };
 
+// Función para obtener todas las motocicletas de un usuario
+export const getMotorcyclesByUserId = async (userId) => {
+  try {
+    const token = await checkAuth();
+    const response = await axios.get(`${API_URL}/motorcycles/user/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+    console.log(response);
+  } catch (error) {
+    console.error("Error fetching motorcycles by user ID:", error);
+    throw error;
+  }
+};
+
 export const getMotorcycleById = async (id) => {
   try {
     const response = await axios.get(`${API_URL}/motorcycles/${id}`);

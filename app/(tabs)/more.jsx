@@ -30,7 +30,7 @@ export default function MoreScreen() {
         icon={({ size, color }) => (
           <Ionicons name="help-circle-outline" color={color} size={size} />
         )}
-        route="/more/upgradeToLandlord"
+        route="/more/UpgradeToLandlord"
       />
       {user.mp_access_token && (
         <OptionCard
@@ -38,9 +38,16 @@ export default function MoreScreen() {
           icon={({ size, color }) => (
             <Ionicons name="add-circle-outline" color={color} size={size} />
           )}
-          route="/more/createMotorcycle"
+          route="/more/CreateMotorcycle"
         />
       )}
+      <OptionCard
+        title="Mis motos"
+        icon={({ size, color }) => (
+          <Ionicons name="speedometer-outline" color={color} size={size} />
+        )}
+        route="/more/MotorcyclesUserList"
+      />
     </ScrollView>
   );
 }

@@ -84,10 +84,15 @@ const DetailScreen = () => {
       </View>
       {isOwner && (
         <View style={styles.buttonContainer}>
-          {/* <Button
+          <Button
             title="Editar"
-            color={colors.primaryButton}
-          /> */}
+            color={colors.pending}
+            onPress={() =>
+              router.push(
+                `/more/UpdateMotorcycle/?motorcycleId=${motorcycle.id}`
+              )
+            }
+          />
           <DeleteMotorcycleButton motorcycleId={motorcycle.id} />
         </View>
       )}
