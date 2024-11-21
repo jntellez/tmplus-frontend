@@ -6,7 +6,7 @@ import {
   StyleSheet,
   View,
 } from "react-native";
-import LabelProfileCard from "../../components/rentals/LabelProfileCard";
+import LabelProfileCard from "../../components/profile/LabelProfileCard";
 import ProfileHeader from "../../components/profile/ProfileHeader";
 import ConfirmationModal from "../../components/ConfirmationModal";
 import colors from "../../theme/colors";

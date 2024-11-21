@@ -49,7 +49,6 @@ export const createMotorcycleWithImages = async (motorcycleData, images) => {
   try {
     // Paso 1: Crear la motocicleta
     const motorcycle = await createMotorcycle(motorcycleData);
-    console.log(motorcycle);
     // Paso 2: Preparar el FormData para las imágenes
     const formData = new FormData();
     images.forEach((uri) => {
@@ -77,9 +76,15 @@ export const createMotorcycleWithImages = async (motorcycleData, images) => {
 // Función para actualizar una moto existente
 export const updateMotorcycle = async (id, motorcycleData) => {
   try {
+    const token = await checkAuth();
     const response = await axios.put(
       `${API_URL}/motorcycles/${id}`,
-      motorcycleData
+      motorcycleData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
     );
     return response.data;
   } catch (error) {
@@ -91,7 +96,12 @@ export const updateMotorcycle = async (id, motorcycleData) => {
 // Función para eliminar una moto
 export const deleteMotorcycle = async (id) => {
   try {
-    const response = await axios.delete(`${API_URL}/motorcycles/${id}`);
+    const token = await checkAuth();
+    const response = await axios.delete(`${API_URL}/motorcycles/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return response.data;
   } catch (error) {
     console.error("Error deleting motorcycle:", error);
@@ -102,8 +112,14 @@ export const deleteMotorcycle = async (id) => {
 // Función para obtener las imágenes de una motocicleta
 export const getMotorcycleImages = async (motorcycleId) => {
   try {
+    const token = await checkAuth();
     const response = await axios.get(
-      `${API_URL}/motorcycles/${motorcycleId}/images`
+      `${API_URL}/motorcycles/${motorcycleId}/images`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
     );
     return response.data;
   } catch (error) {
@@ -133,14 +149,42 @@ export const addMotorcycleImage = async (motorcycleId, imageData) => {
 };
 
 // Función para eliminar una imagen de una motocicleta
-export const deleteMotorcycleImage = async (motorcycleId, imageId) => {
+export const deleteMotorcycleImage = async (imageId) => {
   try {
+    const token = await checkAuth();
     const response = await axios.delete(
-      `${API_URL}/motorcycles/${motorcycleId}/images/${imageId}`
+      `${API_URL}/motorcycles/images/${imageId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
     );
     return response.data;
   } catch (error) {
     console.error("Error deleting motorcycle image:", error);
+    throw error;
+  }
+};
+
+// Función para eliminar todas las imágenes asociadas a una motocicleta
+export const deleteMotorcycleImages = async (motorcycleId) => {
+  try {
+    // Obtener todas las imágenes asociadas a la motocicleta
+    const images = await getMotorcycleImages(motorcycleId);
+
+    // Si no hay imágenes, no hacer nada
+    if (images.length === 0) {
+      console.log("No hay imágenes para eliminar.");
+      return;
+    }
+
+    // Eliminar cada imagen asociada a la motocicleta
+    for (let image of images) {
+      await deleteMotorcycleImage(image.id);
+    }
+  } catch (error) {
+    console.error("Error al eliminar las imágenes de la motocicleta:", error);
     throw error;
   }
 };

@@ -4,10 +4,13 @@ import colors from "../../theme/colors";
 import { router, useLocalSearchParams } from "expo-router";
 import { getMotorcycleById } from "../../services/motorcycleService";
 import MotorcycleSwiper from "../../components/motorcycles/MotorcycleSwiper"; // Importamos el nuevo componente
+import DeleteMotorcycleButton from "../../components/motorcycles/DeleteMotorcycleButton";
+import { getStorageItem } from "../../services/storageService";
 
 const DetailScreen = () => {
   const { motorcycleId } = useLocalSearchParams();
   const [motorcycle, setMotorcycle] = useState({});
+  const [user, setUser] = useState({});
 
   const fetchMotorcycle = async (id) => {
     const data = await getMotorcycleById(id);
@@ -18,7 +21,16 @@ const DetailScreen = () => {
     fetchMotorcycle(motorcycleId);
   }, [motorcycleId]);
 
-  const isOwner = false; // Lógica para determinar si es el propietario
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const userData = await getStorageItem("user");
+      setUser(JSON.parse(userData));
+    };
+
+    fetchUserData();
+  }, []);
+
+  const isOwner = user.id === motorcycle.user_id;
 
   return (
     <ScrollView style={styles.container}>
@@ -72,29 +84,22 @@ const DetailScreen = () => {
       </View>
       {isOwner && (
         <View style={styles.buttonContainer}>
-          <Button
+          {/* <Button
             title="Editar"
             color={colors.primaryButton}
-            onPress={() => {
-              /* Lógica para editar */
-            }}
-          />
+          /> */}
+          <DeleteMotorcycleButton motorcycleId={motorcycle.id} />
+        </View>
+      )}
+      {!isOwner && (
+        <View style={{ marginBottom: 40 }}>
           <Button
-            title="Eliminar"
-            color={colors.dangerButton}
-            onPress={() => {
-              /* Lógica para eliminar */
-            }}
+            title="Alquilar Motocicleta"
+            color={colors.primaryButton}
+            onPress={() => router.push(`/${motorcycleId}/rents`)}
           />
         </View>
       )}
-      <View style={styles.rentButtonContainer}>
-        <Button
-          title="Alquilar Motocicleta"
-          color={colors.primaryButton}
-          onPress={() => router.push(`/${motorcycleId}/rents`)}
-        />
-      </View>
     </ScrollView>
   );
 };
@@ -133,7 +138,7 @@ const styles = StyleSheet.create({
     color: colors.lightText || "#E0E0E0",
   },
   buttonContainer: {
-    marginTop: 16,
+    marginBottom: 40,
     flexDirection: "row",
     justifyContent: "space-around",
   },
