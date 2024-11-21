@@ -12,7 +12,7 @@ import { router } from "expo-router";
 import { getAllByUserId } from "../../services/rentalService";
 import colors from "../../theme/colors";
 import { getStorageItem } from "../../services/storageService";
-import RentalCard from "../../components/RentalCard";
+import RentalCard from "../../components/rentals/RentalCard";
 
 const RentalsHistory = () => {
   const [rentals, setRentals] = useState([]);

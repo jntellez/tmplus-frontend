@@ -12,10 +12,10 @@ import { getRentalById, updateRental } from "../../services/rentalService";
 import { getMotorcycleById } from "../../services/motorcycleService";
 import colors from "../../theme/colors";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import RentalInfo from "../../components/RentalInfo";
-import MotorcycleCardSmall from "../../components/MotorcycleCardSmall";
+import RentalInfo from "../../components/rentals/RentalInfo";
+import MotorcycleCardSmall from "../../components/motorcycles/MotorcycleCardSmall";
 import ConfirmationModal from "../../components/ConfirmationModal";
-import PaymentButton from "../../components/PaymentButton";
+import PaymentButton from "../../components/rentals/PaymentButton";
 import { getStorageItem } from "../../services/storageService";
 
 // Agregar estado de animación

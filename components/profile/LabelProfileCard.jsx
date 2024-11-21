@@ -8,10 +8,10 @@ import {
   Modal,
   Button,
 } from "react-native";
-import colors from "../theme/colors";
-import { validatePassword } from "../services/authService";
-import { updateUserData, updateUserPassword } from "../services/userService";
-import { setStorageItem } from "../services/storageService";
+import colors from "../../theme/colors";
+import { validatePassword } from "../../services/authService";
+import { updateUserData, updateUserPassword } from "../../services/userService";
+import { setStorageItem } from "../../services/storageService";
 
 export default function LabelProfileCard({
   label,

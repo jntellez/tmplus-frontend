@@ -1,9 +1,9 @@
 import React from "react";
 import { View, Text, Image, StyleSheet, Pressable } from "react-native";
-import colors from "../theme/colors";
-import motorcycleImg from "../assets/motorcycleImg.png"; // Imagen por defecto
+import colors from "../../theme/colors";
+import motorcycleImg from "../../assets/motorcycleImg.png"; // Imagen por defecto
 import { Link } from "expo-router";
-import { SERVER_URL } from "../constants";
+import { SERVER_URL } from "../../constants";
 
 const MotorcycleCard = ({ motorcycle }) => {
   // Asegurarse de que 'motorcycle.images' existe y tiene imágenes

@@ -7,8 +7,8 @@ import {
   Linking,
   Platform,
 } from "react-native";
-import colors from "../theme/colors";
-import { createPayment } from "../services/paymentService";
+import colors from "../../theme/colors";
+import { createPayment } from "../../services/paymentService";
 
 const PaymentButton = ({ rental, user, motorcycle, disabled }) => {
   const payment = {

@@ -14,7 +14,7 @@ import { useLocalSearchParams } from "expo-router";
 import { createRental } from "../../../services/rentalService";
 import colors from "../../../theme/colors";
 import { useRouter } from "expo-router";
-import DatePicker from "../../../components/DatePicker";
+import DatePicker from "../../../components/rentals/DatePicker";
 import { getStorageItem } from "../../../services/storageService";
 
 const Rents = () => {

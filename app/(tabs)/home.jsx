@@ -6,7 +6,7 @@ import {
   ActivityIndicator,
   Text,
 } from "react-native";
-import MotorcycleCard from "../../components/MotorcycleCard";
+import MotorcycleCard from "../../components/motorcycles/MotorcycleCard";
 import { getMotorcycles } from "../../services/motorcycleService"; // Importa tu función de servicio
 import Pagination from "../../components/Pagination"; // Importa el componente de paginación
 import colors from "../../theme/colors"; // Importa los colores

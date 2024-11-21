@@ -3,7 +3,7 @@ import { View, Text, Button, StyleSheet, ScrollView } from "react-native";
 import colors from "../../theme/colors";
 import { router, useLocalSearchParams } from "expo-router";
 import { getMotorcycleById } from "../../services/motorcycleService";
-import MotorcycleSwiper from "../../components/MotorcycleSwiper"; // Importamos el nuevo componente
+import MotorcycleSwiper from "../../components/motorcycles/MotorcycleSwiper"; // Importamos el nuevo componente
 
 const DetailScreen = () => {
   const { motorcycleId } = useLocalSearchParams();

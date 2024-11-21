@@ -8,8 +8,8 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import Swiper from "react-native-swiper"; // Importa Swiper
-import motorcycleImg from "../assets/motorcycleImg.png"; // Imagen de fallback
-import { SERVER_URL } from "../constants";
+import motorcycleImg from "../../assets/motorcycleImg.png"; // Imagen de fallback
+import { SERVER_URL } from "../../constants";
 
 const MotorcycleSwiper = ({ images }) => {
   const [isModalVisible, setModalVisible] = useState(false);

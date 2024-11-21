@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
-import colors from "../theme/colors";
-import defaultMotorcycleImg from "../assets/motorcycleImg.png"; // Imagen predeterminada
-import { getMotorcycleById } from "../services/motorcycleService"; // Suponiendo que tengas esta función para obtener la moto por ID
-import { SERVER_URL } from "../constants";
+import colors from "../../theme/colors";
+import defaultMotorcycleImg from "../../assets/motorcycleImg.png"; // Imagen predeterminada
+import { getMotorcycleById } from "../../services/motorcycleService"; // Suponiendo que tengas esta función para obtener la moto por ID
+import { SERVER_URL } from "../../constants";
 
 const statusTranslations = {
   completed: "Completado",

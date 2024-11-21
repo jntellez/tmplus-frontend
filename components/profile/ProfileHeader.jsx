@@ -1,8 +1,8 @@
 // ProfileHeader.jsx
 import React from "react";
 import { View, Text, Image, StyleSheet } from "react-native";
-import DefaultUserImage from "../assets/default-user-image.webp"; // Imagen por defecto
-import colors from "../theme/colors"; // Asegúrate de que los colores estén bien definidos en tu tema
+import DefaultUserImage from "../../assets/default-user-image.webp"; // Imagen por defecto
+import colors from "../../theme/colors"; // Asegúrate de que los colores estén bien definidos en tu tema
 
 export default function ProfileHeader({ joinDate }) {
   // Convertir la fecha de creación a un formato legible

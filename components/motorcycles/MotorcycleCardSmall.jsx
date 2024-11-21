@@ -1,9 +1,9 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import colors from "../theme/colors";
-import defaultMotoImage from "../assets/motorcycleImg.png";
-import { SERVER_URL } from "../constants"; // Asegúrate de importar el servidor
+import colors from "../../theme/colors";
+import defaultMotoImage from "../../assets/motorcycleImg.png";
+import { SERVER_URL } from "../../constants"; // Asegúrate de importar el servidor
 
 const MotorcycleCardSmall = ({ motorcycle, onPress }) => {
   // Verificar si 'motorcycle.image' está disponible y es una URL completa

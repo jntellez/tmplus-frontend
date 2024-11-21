@@ -32,14 +32,15 @@ export default function MoreScreen() {
         )}
         route="/more/upgradeToLandlord"
       />
-      {}
-      <OptionCard
-        title="Publicar mi moto"
-        icon={({ size, color }) => (
-          <Ionicons name="add-circle-outline" color={color} size={size} />
-        )}
-        route="/more/createMotorcycle"
-      />
+      {user.mp_access_token && (
+        <OptionCard
+          title="Publicar mi moto"
+          icon={({ size, color }) => (
+            <Ionicons name="add-circle-outline" color={color} size={size} />
+          )}
+          route="/more/createMotorcycle"
+        />
+      )}
     </ScrollView>
   );
 }

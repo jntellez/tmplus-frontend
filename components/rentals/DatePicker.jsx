@@ -8,8 +8,8 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { Calendar } from "react-native-calendars";
-import colors from "../theme/colors";
-import { getAllByMotorcycleId } from "../services/rentalService"; // Importa el servicio de rentas
+import colors from "../../theme/colors";
+import { getAllByMotorcycleId } from "../../services/rentalService"; // Importa el servicio de rentas
 
 const DatePicker = ({
   rentalDate,
