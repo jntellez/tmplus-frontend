@@ -53,6 +53,13 @@ export default function MoreScreen() {
         )}
         route="/more/MotorcyclesUserList"
       />
+      <OptionCard
+        title="Entregas"
+        icon={({ size, color }) => (
+          <Ionicons name="location-outline" color={color} size={size} />
+        )}
+        route="/more/DeliveryList"
+      />
     </ScrollView>
   );
 }
