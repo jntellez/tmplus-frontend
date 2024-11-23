@@ -4,11 +4,9 @@ import {
   Text,
   FlatList,
   ActivityIndicator,
-  TouchableOpacity,
   StyleSheet,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
 import { getDeliveries } from "../../services/deliveryService";
 import DeliveryCard from "../../components/deliveries/DeliveryCard";
 import colors from "../../theme/colors";
@@ -16,48 +14,37 @@ import colors from "../../theme/colors";
 const DeliveryList = () => {
   const [deliveries, setDeliveries] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(null);
-  const router = useRouter();
 
+  const fetchDeliveries = async () => {
+    try {
+      const data = await getDeliveries();
+      setDeliveries(data);
+    } catch (err) {
+      console.error("Error fetching deliveries:", err);
+      setError("No se pudo cargar la lista de entregas.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Efecto inicial para cargar entregas
   useEffect(() => {
-    const fetchDeliveries = async () => {
-      try {
-        const data = await getDeliveries();
-        setDeliveries(data);
-      } catch (err) {
-        console.error("Error fetching deliveries:", err);
-        setError("No se pudo cargar la lista de entregas.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchDeliveries();
   }, []);
 
-  const renderDeliveryItem = ({ item }) => (
-    <TouchableOpacity
-      onPress={() => router.push(`/delivery-detail/${item.id}`)}
-      style={styles.deliveryItem}
-    >
-      <Ionicons
-        name="cube-outline"
-        size={24}
-        color={colors.primaryTextLight}
-        style={styles.icon}
-      />
-      <View>
-        <Text style={styles.deliveryTitle}>Entrega #{item.id}</Text>
-        <Text style={styles.deliveryText}>Fecha: {item.delivery_date}</Text>
-        <Text style={styles.deliveryText}>
-          Estado:{" "}
-          <Text style={[styles.status, { color: colors[item.status] }]}>
-            {item.status}
-          </Text>
-        </Text>
-      </View>
-    </TouchableOpacity>
-  );
+  // Maneja la lógica de refresco
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await fetchDeliveries();
+    } catch (err) {
+      console.error("Error during refresh:", err);
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -97,8 +84,10 @@ const DeliveryList = () => {
       keyExtractor={(item) => item.id.toString()}
       renderItem={({ item }) => <DeliveryCard item={item} />}
       contentContainerStyle={styles.listContainer}
-      ListHeaderComponent={<Text style={styles.header}>Lista de Entregas</Text>}
+      ListHeaderComponent={<Text style={styles.header}>Tus Entregas</Text>}
       style={{ backgroundColor: colors.background }}
+      refreshing={refreshing} // Propiedad para indicar si está refrescando
+      onRefresh={handleRefresh} // Lógica que se ejecuta al refrescar
     />
   );
 };

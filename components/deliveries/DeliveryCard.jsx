@@ -1,51 +1,89 @@
-// src/components/DeliveryCard.jsx
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import colors from "../../theme/colors"; // Importa los colores definidos en tu tema
+import colors from "../../theme/colors";
 import { getUserData } from "../../services/userService";
+import { getMotorcycleById } from "../../services/motorcycleService";
+import { updateRental } from "../../services/rentalService";
+import ConfirmationModal from "../ConfirmationModal";
+import { updateDelivery } from "../../services/deliveryService";
 
 const DeliveryCard = ({ item }) => {
+  const { id_customer, motorcycle_id, rental_id } = item;
   const [customer, setCustomer] = useState({});
-  const [owner, setOwner] = useState({});
   const [motorcycle, setMotorcycle] = useState({});
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [isConfirming, setConfirming] = useState(false);
+  const date = new Date(item.delivery_date);
 
-  // useEffect(() => {
-  //   const getDeliveryData = async (customerId, ownerId, motorcycleId) => {
-  //     const customerData = await getUserData(customerId);
-  //     setCustomer(customerData);
-  //     const ownerData = await getUserData(ownerId);
-  //     setOwner(ownerData);
-  //     const motorcycleData = await getUserData(motorcycleId);
-  //     setMotorcycle(motorcycleData);
-  //   };
+  useEffect(() => {
+    const getDeliveryData = async (customerId, motorcycleId) => {
+      const customerData = await getUserData(customerId);
+      setCustomer(customerData);
+      const motorcycleData = await getMotorcycleById(motorcycleId);
+      setMotorcycle(motorcycleData);
+    };
 
-  //   const { customer_id, owner_id, motorcycle_id } = item;
-  //   getDeliveryData(customer_id, owner_id, motorcycle_id);
-  // }, []);
+    getDeliveryData(id_customer, motorcycle_id);
+  }, []);
+
+  const handleConfirmReturn = async () => {
+    setConfirming(true);
+    try {
+      await updateRental(rental_id, { status: "completed" });
+      await updateDelivery(item.id, { status: "completed" });
+      setModalVisible(false);
+    } catch (error) {
+      Alert.alert("Error", "No se pudo confirmar la devolucion.");
+    } finally {
+      setConfirming(false);
+    }
+  };
 
   return (
-    <TouchableOpacity
-      onPress={() => router.push(`/delivery-detail/${item.id}`)}
-      style={styles.deliveryItem}
-    >
+    <View style={styles.deliveryItem}>
       <Ionicons
         name="cube-outline"
         size={24}
         color={colors.primaryTextLight}
         style={styles.icon}
       />
-      <View>
-        <Text style={styles.deliveryTitle}>Entrega #{item.id}</Text>
-        <Text style={styles.deliveryText}>Fecha: {item.delivery_date}</Text>
+      <View style={{ flex: 1 }}>
+        <Text style={styles.deliveryTitle}>
+          Entrega tu {motorcycle.model} {motorcycle.year} a {customer.name}
+        </Text>
         <Text style={styles.deliveryText}>
-          Estado:{" "}
+          Fecha de entrega: {date.toLocaleDateString()} a las{" "}
+          {date.toLocaleTimeString()}
+        </Text>
+        <Text style={styles.deliveryText}>
           <Text style={[styles.status, { color: colors[item.status] }]}>
             {item.status}
           </Text>
         </Text>
       </View>
-    </TouchableOpacity>
+      {item.status === "confirmed" && (
+        <TouchableOpacity
+          style={styles.confirmButton}
+          onPress={() => setModalVisible(true)}
+        >
+          <Ionicons
+            name="checkmark"
+            size={20}
+            color={colors.primaryTextLight}
+          />
+        </TouchableOpacity>
+      )}
+      <ConfirmationModal
+        visible={isModalVisible}
+        title="¿Confirmas la devolución de tu moto?"
+        onCancel={() => setModalVisible(false)}
+        onConfirm={handleConfirmReturn}
+        isConfirming={isConfirming}
+        cancelButtonText="Cancelar"
+        confirmButtonText="Confirmar"
+      />
+    </View>
   );
 };
 
@@ -57,6 +95,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.borderColor,
     backgroundColor: colors.cardBackground,
+    position: "relative",
   },
   icon: {
     marginRight: 16,
@@ -72,34 +111,13 @@ const styles = StyleSheet.create({
   status: {
     fontWeight: "bold",
   },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: colors.background,
-  },
-  loadingText: {
-    marginTop: 16,
-    color: colors.primaryTextLight,
-  },
-  errorText: {
-    color: colors.errorText,
-    fontSize: 16,
-  },
-  noDeliveriesText: {
-    marginTop: 16,
-    fontSize: 16,
-    color: colors.primaryTextLight,
-  },
-  listContainer: {
-    padding: 16,
-    backgroundColor: colors.background,
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 16,
-    color: colors.primaryTextLight,
+  confirmButton: {
+    position: "absolute",
+    bottom: 16,
+    right: 16,
+    backgroundColor: colors.primaryButton,
+    borderRadius: 25,
+    padding: 10,
   },
 });
 

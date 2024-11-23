@@ -4,6 +4,7 @@ import { useRouter } from "expo-router";
 import colors from "../../theme/colors";
 import ProfileCard from "../../components/more/ProfileCard";
 import OptionCard from "../../components/more/OptionCard";
+import ThemeCardOption from "../../components/more/ThemeCardOption";
 import { Ionicons } from "@expo/vector-icons";
 import { getStorageItem } from "../../services/storageService";
 
@@ -53,13 +54,30 @@ export default function MoreScreen() {
         )}
         route="/more/MotorcyclesUserList"
       />
+      {user.mp_access_token && (
+        <OptionCard
+          title="Entregas"
+          icon={({ size, color }) => (
+            <Ionicons name="location-outline" color={color} size={size} />
+          )}
+          route="/more/DeliveryList"
+        />
+      )}
       <OptionCard
-        title="Entregas"
+        title="Mis alquileres"
         icon={({ size, color }) => (
-          <Ionicons name="location-outline" color={color} size={size} />
+          <Ionicons name="list-outline" color={color} size={size} />
         )}
-        route="/more/DeliveryList"
+        route="/rentalsHistory"
       />
+      <OptionCard
+        title="Mis reseñas"
+        icon={({ size, color }) => (
+          <Ionicons name="star-outline" color={color} size={size} />
+        )}
+        route="/more/RatingsList"
+      />
+      {/* <ThemeCardOption /> */}
     </ScrollView>
   );
 }

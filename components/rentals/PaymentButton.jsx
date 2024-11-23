@@ -37,6 +37,15 @@ const PaymentButton = ({ rental, user, motorcycle, disabled }) => {
       const paymentData = await createPayment(payment);
 
       if (paymentData && paymentData.sandbox_initial_point) {
+        if (Platform.OS === "web") {
+          // Redirección en navegadores
+          try {
+            window.open(paymentData.sandbox_initial_point, "_blank");
+          } catch (error) {
+            console.error("Error al abrir la URL:", error);
+            alert("No se puede abrir la URL de Mercado Pago.");
+          }
+        }
         Alert.alert(
           "Redirigiendo al Pago",
           "Serás llevado a Mercado Pago para completar el pago.",
@@ -48,7 +57,13 @@ const PaymentButton = ({ rental, user, motorcycle, disabled }) => {
 
                 if (Platform.OS === "web") {
                   // Redirección en navegadores
-                  window.location.href = url;
+                  try {
+                    // Redirección en navegadores web
+                    window.open(url, "_blank");
+                  } catch (error) {
+                    console.error("Error al abrir la URL:", error);
+                    alert("No se puede abrir la URL de Mercado Pago.");
+                  }
                 } else {
                   // Verifica si se puede abrir la URL en móvil
                   const supported = await Linking.canOpenURL(url);

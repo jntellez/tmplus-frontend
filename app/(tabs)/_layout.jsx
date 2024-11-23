@@ -18,7 +18,7 @@ export default function TabsLayout() {
         options={{
           tabBarLabel: "Home",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home" color={color} size={size} />
+            <Ionicons name="home-outline" color={color} size={size} />
           ),
         }}
       />
@@ -27,7 +27,7 @@ export default function TabsLayout() {
         options={{
           tabBarLabel: "Historial",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="list" color={color} size={size} />
+            <Ionicons name="list-outline" color={color} size={size} />
           ),
         }}
       />
