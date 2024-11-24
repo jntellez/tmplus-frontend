@@ -83,21 +83,25 @@ const DetailScreen = () => {
         </View>
       </View>
       {isOwner && (
-        <View style={styles.buttonContainer}>
-          <Button
-            title="Editar"
-            color={colors.pending}
-            onPress={() =>
-              router.push(
-                `/more/UpdateMotorcycle/?motorcycleId=${motorcycle.id}`
-              )
-            }
-          />
-          <DeleteMotorcycleButton motorcycleId={motorcycle.id} />
+        <View style={styles.ownerButtonsContainer}>
+          <View style={[styles.button, styles.editButton]}>
+            <Button
+              title="Editar"
+              color={colors.pending}
+              onPress={() =>
+                router.push(
+                  `/more/UpdateMotorcycle/?motorcycleId=${motorcycle.id}`
+                )
+              }
+            />
+          </View>
+          <View style={[styles.button, styles.deleteButton]}>
+            <DeleteMotorcycleButton motorcycleId={motorcycle.id} />
+          </View>
         </View>
       )}
       {!isOwner && (
-        <View style={{ marginBottom: 40 }}>
+        <View style={styles.button}>
           <Button
             title="Alquilar Motocicleta"
             color={colors.primaryButton}
@@ -150,6 +154,21 @@ const styles = StyleSheet.create({
   rowCard: {
     flexDirection: "row",
     justifyContent: "space-between",
+  },
+  ownerButtonsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 40,
+  },
+  button: {
+    flex: 1,
+    marginHorizontal: 6,
+    paddingVertical: 4,
+    borderWidth: 1,
+    borderColor: colors.borderColor,
+    borderRadius: 8,
+    justifyContent: "center",
+    backgroundColor: colors.cardBackground,
   },
 });
 
