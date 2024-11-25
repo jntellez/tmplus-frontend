@@ -17,6 +17,7 @@ import MotorcycleCardSmall from "../../components/motorcycles/MotorcycleCardSmal
 import ConfirmationModal from "../../components/ConfirmationModal";
 import PaymentButton from "../../components/rentals/PaymentButton";
 import { getStorageItem } from "../../services/storageService";
+import RatingCard from "../../components/ratings/CreateRatingCard";
 
 // Agregar estado de animación
 const RentalDetail = () => {
@@ -146,6 +147,14 @@ const RentalDetail = () => {
         motorcycle={motorcycle}
         onPress={handleMotorcyclePress}
       />
+
+      {rental.status === "completed" && (
+        <RatingCard
+          rentalId={rental.id}
+          motorcycleId={motorcycle.id}
+          userId={user.id}
+        />
+      )}
 
       {rental.status === "pending" && (
         <View style={styles.paymentButtonContainer}>

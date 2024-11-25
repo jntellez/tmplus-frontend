@@ -24,7 +24,6 @@ export const getMotorcyclesByUserId = async (userId) => {
       },
     });
     return response.data;
-    console.log(response);
   } catch (error) {
     console.error("Error fetching motorcycles by user ID:", error);
     throw error;

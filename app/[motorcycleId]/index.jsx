@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Button, StyleSheet, ScrollView } from "react-native";
+import { View, Text, Button, StyleSheet, FlatList } from "react-native";
 import colors from "../../theme/colors";
 import { router, useLocalSearchParams } from "expo-router";
 import { getMotorcycleById } from "../../services/motorcycleService";
 import MotorcycleSwiper from "../../components/motorcycles/MotorcycleSwiper"; // Importamos el nuevo componente
 import DeleteMotorcycleButton from "../../components/motorcycles/DeleteMotorcycleButton";
 import { getStorageItem } from "../../services/storageService";
+import RatingsPreview from "../../components/ratings/RatingsPreview";
 
 const DetailScreen = () => {
   const { motorcycleId } = useLocalSearchParams();
@@ -32,92 +33,135 @@ const DetailScreen = () => {
 
   const isOwner = user.id === motorcycle.user_id;
 
-  return (
-    <ScrollView style={styles.container}>
-      <MotorcycleSwiper images={motorcycle.images} />
-      {/* Usamos el nuevo componente para el Swiper */}
-      <View style={styles.card}>
-        <Text style={styles.cardHeader}>Detalles de la Motocicleta</Text>
-        <View style={styles.cardContent}>
-          <Text style={styles.cardTitle}>Marca: </Text>
-          <Text style={styles.cardText}>{motorcycle.brand}</Text>
-        </View>
-        <View style={styles.cardContent}>
-          <Text style={styles.cardTitle}>Modelo: </Text>
-          <Text style={styles.cardText}>{motorcycle.model}</Text>
-        </View>
-        <View style={styles.cardContent}>
-          <Text style={styles.cardTitle}>Año: </Text>
-          <Text style={styles.cardText}>{motorcycle.year}</Text>
-        </View>
-      </View>
-      <View style={styles.card}>
-        <Text style={styles.cardHeader}>Descripción</Text>
-        <View style={styles.cardContent}>
-          <Text style={styles.cardText}>{motorcycle.description}</Text>
-        </View>
-      </View>
-      <View style={styles.rowCard}>
+  // List of sections to render in FlatList
+  const renderItem = ({ item }) => {
+    if (item === "motorcycle") {
+      return (
+        <>
+          <MotorcycleSwiper images={motorcycle.images} />
+          <View style={styles.card}>
+            <Text style={styles.cardHeader}>Detalles de la Motocicleta</Text>
+            <View style={styles.cardContent}>
+              <Text style={styles.cardTitle}>Marca: </Text>
+              <Text style={styles.cardText}>{motorcycle.brand}</Text>
+            </View>
+            <View style={styles.cardContent}>
+              <Text style={styles.cardTitle}>Modelo: </Text>
+              <Text style={styles.cardText}>{motorcycle.model}</Text>
+            </View>
+            <View style={styles.cardContent}>
+              <Text style={styles.cardTitle}>Año: </Text>
+              <Text style={styles.cardText}>{motorcycle.year}</Text>
+            </View>
+          </View>
+        </>
+      );
+    }
+
+    if (item === "description") {
+      return (
         <View style={styles.card}>
-          <Text style={styles.cardHeader}>Precio de Alquiler</Text>
+          <Text style={styles.cardHeader}>Descripción</Text>
           <View style={styles.cardContent}>
-            <Text style={styles.cardText}>${motorcycle.rental_price}</Text>
+            <Text style={styles.cardText}>{motorcycle.description}</Text>
           </View>
         </View>
+      );
+    }
 
-        <View style={[styles.card, styles.availabilityCard]}>
-          <Text style={styles.cardHeader}>Disponibilidad</Text>
+    if (item === "rentalPrice") {
+      return (
+        <View style={styles.rowCard}>
+          <View style={styles.card}>
+            <Text style={styles.cardHeader}>Precio de Alquiler</Text>
+            <View style={styles.cardContent}>
+              <Text style={styles.cardText}>${motorcycle.rental_price}</Text>
+            </View>
+          </View>
+
+          <View style={[styles.card, styles.availabilityCard]}>
+            <Text style={styles.cardHeader}>Disponibilidad</Text>
+            <View style={styles.cardContent}>
+              <Text style={styles.cardText}>
+                {motorcycle.available ? "Disponible" : "No disponible"}
+              </Text>
+            </View>
+          </View>
+        </View>
+      );
+    }
+
+    if (item === "publishDate") {
+      return (
+        <View style={styles.card}>
+          <Text style={styles.cardHeader}>Fecha de Publicación</Text>
           <View style={styles.cardContent}>
             <Text style={styles.cardText}>
-              {motorcycle.available ? "Disponible" : "No disponible"}
+              {new Date(motorcycle.publish_date).toLocaleDateString()}
             </Text>
           </View>
         </View>
-      </View>
-      <View style={styles.card}>
-        <Text style={styles.cardHeader}>Fecha de Publicación</Text>
-        <View style={styles.cardContent}>
-          <Text style={styles.cardText}>
-            {new Date(motorcycle.publish_date).toLocaleDateString()}
-          </Text>
-        </View>
-      </View>
-      {isOwner && (
-        <View style={styles.ownerButtonsContainer}>
-          <View style={[styles.button, styles.editButton]}>
-            <Button
-              title="Editar"
-              color={colors.pending}
-              onPress={() =>
-                router.push(
-                  `/more/UpdateMotorcycle/?motorcycleId=${motorcycle.id}`
-                )
-              }
-            />
-          </View>
-          <View style={[styles.button, styles.deleteButton]}>
-            <DeleteMotorcycleButton motorcycleId={motorcycle.id} />
-          </View>
-        </View>
-      )}
-      {!isOwner && (
-        <View style={styles.button}>
-          <Button
-            title="Alquilar Motocicleta"
-            color={colors.primaryButton}
-            onPress={() => router.push(`/${motorcycleId}/rents`)}
-          />
-        </View>
-      )}
-    </ScrollView>
+      );
+    }
+
+    return null;
+  };
+
+  return (
+    <View style={styles.container}>
+      <FlatList
+        data={[
+          "motorcycle",
+          "description",
+          "rentalPrice",
+          "publishDate",
+          "buttons",
+          "ratings",
+        ]}
+        keyExtractor={(item) => item}
+        renderItem={renderItem}
+        ListFooterComponent={() => (
+          <>
+            {isOwner && (
+              <View style={styles.ownerButtonsContainer}>
+                <View style={[styles.button, styles.editButton]}>
+                  <Button
+                    title="Editar"
+                    color={colors.pending}
+                    onPress={() =>
+                      router.push(
+                        `/more/UpdateMotorcycle/?motorcycleId=${motorcycle.id}`
+                      )
+                    }
+                  />
+                </View>
+                <View style={[styles.button, styles.deleteButton]}>
+                  <DeleteMotorcycleButton motorcycleId={motorcycle.id} />
+                </View>
+              </View>
+            )}
+            {!isOwner && (
+              <View style={styles.button}>
+                <Button
+                  title="Alquilar Motocicleta"
+                  color={colors.primaryButton}
+                  onPress={() => router.push(`/${motorcycleId}/rents`)}
+                />
+              </View>
+            )}
+            <RatingsPreview motorcycleId={motorcycleId} />
+          </>
+        )}
+      />
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
-    backgroundColor: colors.background,
+    backgroundColor: colors.background, // Fondo de la página
+    padding: 16, // Padding para todo el contenido
   },
   card: {
     backgroundColor: colors.cardBackground,
@@ -158,7 +202,6 @@ const styles = StyleSheet.create({
   ownerButtonsContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 40,
   },
   button: {
     flex: 1,

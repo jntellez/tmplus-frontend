@@ -71,11 +71,11 @@ export default function MoreScreen() {
         route="/rentalsHistory"
       />
       <OptionCard
-        title="Mis reseñas"
+        title="Mis opiniones"
         icon={({ size, color }) => (
           <Ionicons name="star-outline" color={color} size={size} />
         )}
-        route="/more/RatingsList"
+        route="/more/UserRatingsList"
       />
       {/* <ThemeCardOption /> */}
     </ScrollView>
