@@ -23,7 +23,12 @@ export default function Layout() {
           <Logo color={colors.background} style={{ width: 10, height: 8 }} />
         ),
         headerRight: () => {
-          if (segments.includes("profile")) return null;
+          if (
+            segments.includes("profile") ||
+            segments.includes("login") ||
+            segments.includes("register")
+          )
+            return null;
 
           return (
             <TouchableOpacity

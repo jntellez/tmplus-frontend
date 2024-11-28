@@ -114,9 +114,7 @@ const Rents = () => {
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.title}>
-        Crear Renta para Motocicleta {motorcycleId}
-      </Text>
+      <Text style={styles.title}>Rentar Motocicleta</Text>
       <TouchableOpacity
         style={styles.card}
         onPress={() => setModalVisible(true)}
@@ -171,6 +169,30 @@ const Rents = () => {
         </View>
       </Modal>
 
+      <View style={styles.card}>
+        <Text
+          style={{
+            fontSize: 18,
+            color: colors.linkColor,
+            fontWeight: "bold",
+            marginBottom: 12,
+          }}
+        >
+          Requisitos para su Renta
+        </Text>
+        <Text style={styles.cardText}>
+          • Ser mayor de 21 años.{"\n"}• Licencia de manejo vigente.{"\n"}• INE
+          o credencial oficial.{"\n"}• En caso de ser extranjero, credencial de
+          identidad de su país y pasaporte vigente.
+          {"\n"}• Comprobante de domicilio.
+        </Text>
+        <Text
+          style={[styles.cardText, { marginTop: 12, color: colors.pending }]}
+        >
+          Presentar los documentos al dueño de la motocicleta.
+        </Text>
+      </View>
+
       {loading ? (
         <ActivityIndicator size="large" color={colors.linkColor} />
       ) : (
@@ -208,7 +230,6 @@ const styles = StyleSheet.create({
   cardText: {
     fontSize: 18,
     color: colors.primaryTextLight,
-    textAlign: "center",
   },
   modalBackground: {
     flex: 1,
