@@ -3,14 +3,16 @@ import {
   View,
   ScrollView,
   StyleSheet,
+  Dimensions,
   ActivityIndicator,
   Text,
 } from "react-native";
 import MotorcycleCard from "../../components/motorcycles/MotorcycleCard";
 import { getMotorcyclesByUserId } from "../../services/motorcycleService"; // Importa tu función de servicio
-import Pagination from "../../components/Pagination"; // Importa el componente de paginación
 import colors from "../../theme/colors"; // Importa los colores
 import { getStorageItem } from "../../services/storageService";
+
+const { width } = Dimensions.get("window"); // Obtener el ancho de la pantalla
 
 const Home = () => {
   const [motorcycles, setMotorcycles] = useState([]);
@@ -61,6 +63,11 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 16,
+    flexDirection: "row", // Usa fila para mostrar las tarjetas de manera horizontal
+    flexWrap: "wrap", // Para que las tarjetas se acomoden en varias filas si es necesario
+    justifyContent: "space-around", // Espacio igual entre las tarjetas
+    width: width < 768 ? "100%" : "50%", // En pantallas más grandes, el contenedor será más pequeño
+    alignSelf: "center", // Centra el contenido horizontalmente
   },
   noMotorcyclesText: {
     textAlign: "center",
@@ -68,6 +75,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginTop: 20,
   },
+  paginationContainer: {
+    width: "100%", // Asegura que la paginación ocupe el 100% del ancho
+    alignItems: "center",
+    marginBottom: 20, // Espacio abajo
+  },
 });
-
 export default Home;

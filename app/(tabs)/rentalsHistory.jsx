@@ -1,4 +1,3 @@
-// RentalsHistory.jsx
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -7,6 +6,7 @@ import {
   StyleSheet,
   ActivityIndicator,
   Alert,
+  useWindowDimensions,
 } from "react-native";
 import { router } from "expo-router";
 import { getAllByUserId } from "../../services/rentalService";
@@ -18,6 +18,8 @@ const RentalsHistory = () => {
   const [rentals, setRentals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
+
+  const { width } = useWindowDimensions(); // Detecta el ancho de la pantalla
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -57,36 +59,52 @@ const RentalsHistory = () => {
   }, []);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Historial de Reservas</Text>
-      {loading ? (
-        <ActivityIndicator size="large" color={colors.primary} />
-      ) : (
-        <FlatList
-          data={rentals}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <RentalCard
-              rental={item}
-              onPress={() => router.push(`/rental/${item.id}`)}
-            />
-          )}
-          ListEmptyComponent={
-            <Text style={styles.noRentalsText}>
-              No hay reservas disponibles
-            </Text>
-          }
-        />
-      )}
+    <View style={styles.mainContainer}>
+      <View
+        style={[
+          styles.container,
+          {
+            width: width > 768 ? "50%" : "100%", // Ancho al 50% en escritorio, 100% en móviles
+            alignSelf: width > 768 ? "center" : "stretch", // Centra el contenedor en escritorio
+          },
+        ]}
+      >
+        <Text style={styles.title}>Historial de Reservas</Text>
+        {loading ? (
+          <ActivityIndicator size="large" color={colors.primary} />
+        ) : (
+          <FlatList
+            data={rentals}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => (
+              <RentalCard
+                rental={item}
+                onPress={() => router.push(`/rental/${item.id}`)}
+              />
+            )}
+            ListEmptyComponent={
+              <Text style={styles.noRentalsText}>
+                No hay reservas disponibles
+              </Text>
+            }
+          />
+        )}
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  mainContainer: {
+    flex: 1,
+    backgroundColor: colors.background, // Fondo para el contenedor principal
+    justifyContent: "center", // Centra el contenido verticalmente
+  },
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: colors.background,
+    backgroundColor: colors.background, // Fondo para el contenedor de contenido
+    justifyContent: "center", // Centra el contenido verticalmente
   },
   title: {
     fontSize: 24,
