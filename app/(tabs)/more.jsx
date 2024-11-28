@@ -77,6 +77,17 @@ export default function MoreScreen() {
         )}
         route="/more/UserRatingsList"
       />
+      <OptionCard
+        title="Ayuda"
+        icon={({ size, color }) => (
+          <Ionicons
+            name="information-circle-outline"
+            color={color}
+            size={size}
+          />
+        )}
+        route="/more/ContactUs"
+      />
       {/* <ThemeCardOption /> */}
     </ScrollView>
   );
