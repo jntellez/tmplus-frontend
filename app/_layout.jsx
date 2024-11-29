@@ -1,13 +1,20 @@
 import React from "react";
 import { Stack, useRouter, useSegments } from "expo-router";
 import Logo from "../assets/Logo";
-import { StyleSheet, TouchableOpacity } from "react-native";
+import { StyleSheet, TouchableOpacity, Dimensions } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import colors from "../theme/colors";
+
+// Obtener el tamaño de la ventana
+const windowWidth = Dimensions.get("window").width;
 
 export default function Layout() {
   const router = useRouter();
   const segments = useSegments();
+
+  // Ajustar el tamaño del logo en función del tamaño de la ventana
+  const logoWidth = windowWidth > 768 ? 130 : 40; // Tamaño mayor en pantallas grandes
+  const logoHeight = windowWidth > 768 ? 100 : 32; // Tamaño mayor en pantallas grandes
 
   return (
     <Stack
@@ -20,7 +27,10 @@ export default function Layout() {
           fontWeight: "bold",
         },
         headerTitle: () => (
-          <Logo color={colors.background} style={{ width: 10, height: 8 }} />
+          <Logo
+            color={colors.background}
+            style={{ width: logoWidth, height: logoHeight }}
+          />
         ),
         headerRight: () => {
           if (

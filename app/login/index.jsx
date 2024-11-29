@@ -6,12 +6,15 @@ import {
   Text,
   ActivityIndicator,
   StyleSheet,
+  Dimensions,
 } from "react-native";
 import { login, parseJwt } from "../../services/authService";
 import { useRouter } from "expo-router";
 import colors from "../../theme/colors";
 import { getUserData } from "../../services/userService";
 import { setStorageItem } from "../../services/storageService";
+
+const { width } = Dimensions.get("window"); // Obtiene el ancho de la pantalla
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
@@ -57,51 +60,62 @@ export default function LoginScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Iniciar sesión</Text>
-      <TextInput
-        style={[styles.input, error && styles.errorInput]}
-        placeholder="Correo electrónico"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        placeholderTextColor={colors.secondaryTextLight}
-        autoCapitalize="none"
-      />
-      <TextInput
-        style={[styles.input, error && styles.errorInput]}
-        placeholder="Contraseña"
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-        placeholderTextColor={colors.secondaryTextLight}
-      />
-      {loading ? (
-        <ActivityIndicator size="large" color={colors.primaryButtonColor} />
-      ) : (
-        <Button
-          title="Iniciar sesión"
-          onPress={handleLogin}
-          color={colors.primaryButtonColor}
+    <View style={styles.outerContainer}>
+      {" "}
+      {/* Contenedor principal que centra el contenido */}
+      <View style={styles.container}>
+        <Text style={styles.title}>Iniciar sesión</Text>
+        <TextInput
+          style={[styles.input, error && styles.errorInput]}
+          placeholder="Correo electrónico"
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          placeholderTextColor={colors.secondaryTextLight}
+          autoCapitalize="none"
         />
-      )}
-      {error && <Text style={styles.error}>{error}</Text>}
-      <Text style={styles.registerLink} onPress={navigateToRegister}>
-        ¿No tienes cuenta? Regístrate
-      </Text>
+        <TextInput
+          style={[styles.input, error && styles.errorInput]}
+          placeholder="Contraseña"
+          secureTextEntry
+          value={password}
+          onChangeText={setPassword}
+          placeholderTextColor={colors.secondaryTextLight}
+        />
+        {loading ? (
+          <ActivityIndicator size="large" color={colors.primaryButtonColor} />
+        ) : (
+          <Button
+            title="Iniciar sesión"
+            onPress={handleLogin}
+            color={colors.primaryButtonColor}
+          />
+        )}
+        {error && <Text style={styles.error}>{error}</Text>}
+        <Text style={styles.registerLink} onPress={navigateToRegister}>
+          ¿No tienes cuenta? Regístrate
+        </Text>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  outerContainer: {
+    flex: 1,
+    justifyContent: "center", // Centra el contenido en el eje vertical
+    alignItems: "center", // Centra el contenido en el eje horizontal
+    backgroundColor: colors.background,
+    padding: 20,
+  },
   container: {
     flex: 1,
     justifyContent: "center",
-    padding: 20,
-    backgroundColor: colors.background,
+    width: "100%", // Ancho por defecto para móviles
+    maxWidth: 600, // Tamaño máximo del contenedor
   },
   title: {
-    fontSize: 24,
+    fontSize: width > 1024 ? 30 : 24, // Ajuste de tamaño de fuente dependiendo del ancho
     fontWeight: "bold",
     color: colors.primaryTextLight,
     textAlign: "center",

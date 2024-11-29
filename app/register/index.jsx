@@ -9,9 +9,12 @@ import {
   Modal,
   TouchableOpacity,
   ScrollView,
+  Dimensions, // Importar Dimensions
 } from "react-native";
 import CustomCheckBox from "../../components/CustomCheckBox"; // Checkbox personalizado
 import colors from "../../theme/colors";
+
+const windowWidth = Dimensions.get("window").width; // Obtén el ancho de la pantalla
 
 export default function RegisterScreen() {
   const [name, setName] = useState("");
@@ -42,65 +45,74 @@ export default function RegisterScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Registrarse</Text>
-      <TextInput
-        style={[styles.input, error && styles.errorInput]}
-        placeholder="Nombre"
-        value={name}
-        onChangeText={setName}
-        placeholderTextColor={colors.secondaryTextLight}
-      />
-      <TextInput
-        style={[styles.input, error && styles.errorInput]}
-        placeholder="Correo electrónico"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        placeholderTextColor={colors.secondaryTextLight}
-      />
-      <TextInput
-        style={[styles.input, error && styles.errorInput]}
-        placeholder="Contraseña"
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-        placeholderTextColor={colors.secondaryTextLight}
-      />
-
-      {/* Checkbox con enlace a términos */}
-      <View style={styles.checkboxContainer}>
-        <CustomCheckBox value={acceptTerms} onChange={setAcceptTerms} />
-        <Text style={styles.checkboxLabel}>
-          Acepto los{" "}
-          <Text
-            style={styles.link}
-            onPress={() => setShowTerms(true)} // Abrir el modal al presionar
-          >
-            términos y condiciones
-          </Text>
-        </Text>
-      </View>
-
-      {loading ? (
-        <ActivityIndicator size="large" color={colors.secondaryTextLight} />
-      ) : (
-        <Button
-          title="Registrarse"
-          onPress={handleRegister}
-          color={colors.primaryButtonColor}
+    <View style={styles.fullScreenContainer}>
+      {" "}
+      {/* Contenedor que ocupa toda la pantalla */}
+      <View
+        style={[styles.container, { width: windowWidth > 768 ? "50%" : "90%" }]}
+      >
+        {" "}
+        {/* Contenedor ajustado dentro del contenedor principal */}
+        <Text style={styles.title}>Registrarse</Text>
+        <TextInput
+          style={[styles.input, error && styles.errorInput]}
+          placeholder="Nombre"
+          value={name}
+          onChangeText={setName}
+          placeholderTextColor={colors.secondaryTextLight}
         />
-      )}
-      {error && <Text style={styles.error}>{error}</Text>}
-
-      {/* Modal de términos y condiciones */}
-      <Modal visible={showTerms} animationType="slide" transparent={true}>
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Términos y Condiciones</Text>
-            <ScrollView style={styles.termsContainer}>
-              <Text style={styles.termsText}>
-                {`Última actualización: 27 de noviembre de 2024
+        <TextInput
+          style={[styles.input, error && styles.errorInput]}
+          placeholder="Correo electrónico"
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          placeholderTextColor={colors.secondaryTextLight}
+        />
+        <TextInput
+          style={[styles.input, error && styles.errorInput]}
+          placeholder="Contraseña"
+          secureTextEntry
+          value={password}
+          onChangeText={setPassword}
+          placeholderTextColor={colors.secondaryTextLight}
+        />
+        {/* Checkbox con enlace a términos */}
+        <View style={styles.checkboxContainer}>
+          <CustomCheckBox value={acceptTerms} onChange={setAcceptTerms} />
+          <Text style={styles.checkboxLabel}>
+            Acepto los{" "}
+            <Text
+              style={styles.link}
+              onPress={() => setShowTerms(true)} // Abrir el modal al presionar
+            >
+              términos y condiciones
+            </Text>
+          </Text>
+        </View>
+        {loading ? (
+          <ActivityIndicator size="large" color={colors.secondaryTextLight} />
+        ) : (
+          <Button
+            title="Registrarse"
+            onPress={handleRegister}
+            color={colors.primaryButtonColor}
+          />
+        )}
+        {error && <Text style={styles.error}>{error}</Text>}
+        {/* Modal de términos y condiciones */}
+        <Modal visible={showTerms} animationType="slide" transparent={true}>
+          <View style={styles.modalOverlay}>
+            <View
+              style={[
+                styles.modalContent,
+                { width: windowWidth > 768 ? "50%" : "90%" },
+              ]}
+            >
+              <Text style={styles.modalTitle}>Términos y Condiciones</Text>
+              <ScrollView style={styles.termsContainer}>
+                <Text style={styles.termsText}>
+                  {`Última actualización: 27 de noviembre de 2024
 
 Bienvenido a Transporte Motorizado Plus (TMPlus). Al utilizar nuestra aplicación, usted acepta cumplir con estos Términos y Condiciones. Si no está de acuerdo con ellos, no debe utilizar la aplicación.
 
@@ -158,22 +170,34 @@ Si tiene preguntas o inquietudes sobre estos Términos y Condiciones, puede cont
 Correo: soporte.tmplus@gmail.com
 
 Al utilizar TMPlus, usted confirma que ha leído, entendido y aceptado estos Términos y Condiciones y que exime a TMPlus de cualquier responsabilidad relacionada con el uso de la plataforma.`}
-              </Text>
-            </ScrollView>
-            <Button title="Cerrar" onPress={() => setShowTerms(false)} />
+                </Text>
+              </ScrollView>
+              <Button title="Cerrar" onPress={() => setShowTerms(false)} />
+            </View>
           </View>
-        </View>
-      </Modal>
+        </Modal>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  fullScreenContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center", // Centrado horizontal y vertical
+    backgroundColor: colors.background,
+  },
   container: {
     flex: 1,
     justifyContent: "center",
-    padding: 20,
     backgroundColor: colors.background,
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 5, // Para agregar sombra en dispositivos Android
   },
   title: {
     fontSize: 24,
@@ -187,53 +211,54 @@ const styles = StyleSheet.create({
     borderColor: colors.borderColor,
     borderWidth: 1,
     marginBottom: 10,
-    paddingLeft: 8,
+    paddingLeft: 10,
     color: colors.primaryTextLight,
     borderRadius: 4,
+  },
+  errorInput: {
+    borderColor: "red",
   },
   checkboxContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginVertical: 10,
+    marginBottom: 10,
   },
   checkboxLabel: {
     color: colors.primaryTextLight,
     marginLeft: 10,
   },
   link: {
-    color: colors.linkColor,
+    color: colors.primaryButtonColor,
     textDecorationLine: "underline",
   },
   error: {
-    color: colors.dangerButton,
-    marginTop: 10,
+    color: "red",
     textAlign: "center",
+    marginTop: 10,
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.8)", // Fondo semitransparente
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalContent: {
-    backgroundColor: colors.cardBackground,
+    backgroundColor: colors.background,
     padding: 20,
     borderRadius: 8,
-    width: "90%",
-    maxHeight: "80%",
+    alignItems: "center",
   },
   modalTitle: {
     fontSize: 20,
     fontWeight: "bold",
     color: colors.primaryTextLight,
     marginBottom: 10,
-    textAlign: "center",
   },
   termsContainer: {
     marginBottom: 20,
+    maxHeight: 300,
   },
   termsText: {
-    color: colors.secondaryTextLight,
-    fontSize: 14,
+    color: colors.primaryTextLight,
   },
 });
