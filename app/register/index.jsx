@@ -7,12 +7,15 @@ import {
   ActivityIndicator,
   StyleSheet,
   Modal,
-  TouchableOpacity,
   ScrollView,
   Dimensions, // Importar Dimensions
 } from "react-native";
+import { register, parseJwt } from "../../services/authService";
 import CustomCheckBox from "../../components/CustomCheckBox"; // Checkbox personalizado
+import { setStorageItem } from "../../services/storageService";
+import { getUserData } from "../../services/userService";
 import colors from "../../theme/colors";
+import { useRouter } from "expo-router";
 
 const windowWidth = Dimensions.get("window").width; // Obtén el ancho de la pantalla
 
@@ -24,6 +27,7 @@ export default function RegisterScreen() {
   const [showTerms, setShowTerms] = useState(false); // Estado para mostrar el modal
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const handleRegister = async () => {
     setLoading(true);
@@ -35,7 +39,16 @@ export default function RegisterScreen() {
       } else if (!acceptTerms) {
         setError("Debes aceptar los términos y condiciones");
       } else {
-        // Registro exitoso (tu lógica aquí)
+        const token = await register(name, email, password);
+        if (token) {
+          // Si el registro es exitoso, extraer el ID del usuario desde el token
+          const { id } = parseJwt(token);
+          const userData = await getUserData(id);
+          // Guardar los datos del usuario en el storage
+          setStorageItem("user", JSON.stringify(userData));
+          // Redirigir al Home
+          router.replace("/home");
+        }
       }
     } catch (error) {
       setError("Error al registrar el usuario. Intenta de nuevo.");
