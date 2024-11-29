@@ -63,57 +63,59 @@ const HelpPage = () => {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.title}>Página de Ayuda</Text>
+    <View style={{ backgroundColor: colors.background, minHeight: "100%" }}>
+      <ScrollView style={styles.container}>
+        <Text style={styles.title}>Página de Ayuda</Text>
 
-      <Text style={styles.description}>
-        Si tienes alguna duda o necesitas asistencia, no dudes en contactarnos a
-        través del formulario a continuación.
-      </Text>
+        <Text style={styles.description}>
+          Si tienes alguna duda o necesitas asistencia, no dudes en contactarnos
+          a través del formulario a continuación.
+        </Text>
 
-      <View style={styles.formContainer}>
-        <Text style={styles.formLabel}>Correo electrónico:</Text>
-        <TextInput
-          style={styles.input}
-          value={email}
-          onChangeText={setEmail}
-          placeholder="Introduce tu correo"
-          placeholderTextColor={colors.secondaryTextLight}
-          keyboardType="email-address"
-        />
-
-        <Text style={styles.formLabel}>Mensaje:</Text>
-        <TextInput
-          style={[styles.input, styles.textArea]}
-          value={message}
-          onChangeText={setMessage}
-          placeholder="Escribe tu mensaje"
-          placeholderTextColor={colors.secondaryTextLight}
-          multiline
-          numberOfLines={4}
-        />
-
-        {loading ? (
-          <ActivityIndicator size="large" color={colors.linkColor} />
-        ) : (
-          <Button
-            title="Enviar"
-            onPress={handleSubmit}
-            color={colors.linkColor}
+        <View style={styles.formContainer}>
+          <Text style={styles.formLabel}>Correo electrónico:</Text>
+          <TextInput
+            style={styles.input}
+            value={email}
+            onChangeText={setEmail}
+            placeholder="Introduce tu correo"
+            placeholderTextColor={colors.secondaryTextLight}
+            keyboardType="email-address"
           />
-        )}
-      </View>
 
-      <View style={styles.contactInfo}>
-        <Text style={styles.contactTitle}>
-          ¿Prefieres escribirnos directamente?
-        </Text>
-        <Text style={styles.contactText}>
-          Puedes enviarnos un correo a{" "}
-          <Text style={styles.link}>soporte.tmplus@gmail.com</Text>.
-        </Text>
-      </View>
-    </ScrollView>
+          <Text style={styles.formLabel}>Mensaje:</Text>
+          <TextInput
+            style={[styles.input, styles.textArea]}
+            value={message}
+            onChangeText={setMessage}
+            placeholder="Escribe tu mensaje"
+            placeholderTextColor={colors.secondaryTextLight}
+            multiline
+            numberOfLines={4}
+          />
+
+          {loading ? (
+            <ActivityIndicator size="large" color={colors.linkColor} />
+          ) : (
+            <Button
+              title="Enviar"
+              onPress={handleSubmit}
+              color={colors.linkColor}
+            />
+          )}
+        </View>
+
+        <View style={styles.contactInfo}>
+          <Text style={styles.contactTitle}>
+            ¿Prefieres escribirnos directamente?
+          </Text>
+          <Text style={styles.contactText}>
+            Puedes enviarnos un correo a{" "}
+            <Text style={styles.link}>soporte.tmplus@gmail.com</Text>.
+          </Text>
+        </View>
+      </ScrollView>
+    </View>
   );
 };
 
@@ -122,6 +124,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
     padding: 16,
+    // Aquí es donde se establece el 50% en pantallas grandes
+    width: "100%", // 100% en dispositivos pequeños
+    maxWidth: 1200, // No más de 1200px de ancho en pantallas grandes
+    marginLeft: "auto", // Centrado en pantallas grandes
+    marginRight: "auto", // Centrado en pantallas grandes
   },
   title: {
     fontSize: 24,

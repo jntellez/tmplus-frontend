@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, FlatList } from "react-native";
+import { View, Text, StyleSheet, FlatList, Dimensions } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { getRatingsByMotorcycle } from "../../../services/ratingService";
 import RatingsHeader from "../../../components/ratings/RatingsHeader";
 import Rating from "../../../components/ratings/Rating";
 import colors from "../../../theme/colors";
+
+// Obtener el ancho de la pantalla
+const { width } = Dimensions.get("window");
 
 const RatingsPage = () => {
   const [ratings, setRatings] = useState([]);
@@ -24,28 +27,37 @@ const RatingsPage = () => {
   }, [motorcycleId]);
 
   return (
-    <View style={styles.container}>
-      {/* Header que muestra la media de las valoraciones y el número total */}
-      <RatingsHeader ratings={ratings} />
+    <View style={styles.mainContainer}>
+      <View style={styles.container}>
+        {/* Header que muestra la media de las valoraciones y el número total */}
+        <RatingsHeader ratings={ratings} />
 
-      <FlatList
-        data={ratings}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => <Rating item={item} />}
-        ListEmptyComponent={
-          <Text style={styles.emptyText}>No hay valoraciones disponibles</Text>
-        }
-      />
+        <FlatList
+          data={ratings}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => <Rating item={item} />}
+          ListEmptyComponent={
+            <Text style={styles.emptyText}>
+              No hay valoraciones disponibles
+            </Text>
+          }
+        />
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  mainContainer: {
+    flex: 1,
+    backgroundColor: colors.background, // Color de fondo principal
+    alignItems: "center",
+  },
   container: {
     flex: 1,
-    paddingHorizontal: 16,
-    paddingTop: 24,
     backgroundColor: colors.background,
+    padding: 16, // Padding para mantener el espaciado vertical en la pantalla
+    width: width > 1024 ? "50%" : "100%",
   },
   emptyText: {
     textAlign: "center",

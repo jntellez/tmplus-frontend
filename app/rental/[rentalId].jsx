@@ -142,60 +142,62 @@ const RentalDetail = () => {
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }
     >
-      <RentalInfo rental={rental} customerName={user.name} />
-      <MotorcycleCardSmall
-        motorcycle={motorcycle}
-        onPress={handleMotorcyclePress}
-      />
-
-      {rental.status === "completed" && (
-        <RatingCard
-          rentalId={rental.id}
-          motorcycleId={motorcycle.id}
-          userId={user.id}
+      <View style={styles.mainContainer}>
+        <RentalInfo rental={rental} customerName={user.name} />
+        <MotorcycleCardSmall
+          motorcycle={motorcycle}
+          onPress={handleMotorcyclePress}
         />
-      )}
 
-      {rental.status === "pending" && (
-        <View style={styles.paymentButtonContainer}>
-          <PaymentButton
-            rental={rental}
-            user={user}
-            motorcycle={motorcycle}
-            disabled={!rental.status === "pending"}
+        {rental.status === "completed" && (
+          <RatingCard
+            rentalId={rental.id}
+            motorcycleId={motorcycle.id}
+            userId={user.id}
           />
-        </View>
-      )}
+        )}
 
-      {rental.status === "confirmed" && motorcycle.delivery_instructions && (
-        <View style={styles.fullWidthCard}>
-          <Text style={styles.cardHeader}>Instrucciones de entrega</Text>
-          <Text style={styles.cardText}>
-            {motorcycle.delivery_instructions}
-          </Text>
-        </View>
-      )}
+        {rental.status === "pending" && (
+          <View style={styles.paymentButtonContainer}>
+            <PaymentButton
+              rental={rental}
+              user={user}
+              motorcycle={motorcycle}
+              disabled={!rental.status === "pending"}
+            />
+          </View>
+        )}
 
-      {(rental.status === "pending" || rental.status === "confirmed") && (
-        <>
-          <Button
-            title="Cancelar Renta"
-            color={colors.dangerButton}
-            onPress={showCancelModal}
-          />
-          <View style={styles.space}></View>
-        </>
-      )}
+        {rental.status === "confirmed" && motorcycle.delivery_instructions && (
+          <View style={styles.fullWidthCard}>
+            <Text style={styles.cardHeader}>Instrucciones de entrega</Text>
+            <Text style={styles.cardText}>
+              {motorcycle.delivery_instructions}
+            </Text>
+          </View>
+        )}
 
-      <ConfirmationModal
-        visible={showModal}
-        title="¿Estás seguro de cancelar esta renta?"
-        onCancel={hideCancelModal}
-        onConfirm={handleCancelRental}
-        isConfirming={isCanceling}
-        cancelButtonText="Cancelar"
-        confirmButtonText="Confirmar"
-      />
+        {(rental.status === "pending" || rental.status === "confirmed") && (
+          <>
+            <Button
+              title="Cancelar Renta"
+              color={colors.dangerButton}
+              onPress={showCancelModal}
+            />
+            <View style={styles.space}></View>
+          </>
+        )}
+
+        <ConfirmationModal
+          visible={showModal}
+          title="¿Estás seguro de cancelar esta renta?"
+          onCancel={hideCancelModal}
+          onConfirm={handleCancelRental}
+          isConfirming={isCanceling}
+          cancelButtonText="Cancelar"
+          confirmButtonText="Confirmar"
+        />
+      </View>
     </ScrollView>
   );
 };
@@ -203,15 +205,14 @@ const RentalDetail = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
     backgroundColor: colors.background, // Ya es un color claro
   },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: colors.primaryTextLight, // Puedes hacer este color más claro
-    marginBottom: 16,
-    textAlign: "center",
+  mainContainer: {
+    width: "100%",
+    maxWidth: 1000, // Contenedor máximo
+    marginLeft: "auto",
+    marginRight: "auto",
+    padding: 16,
   },
   errorText: {
     textAlign: "center",

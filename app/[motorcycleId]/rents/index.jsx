@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   Modal,
   ScrollView,
+  Dimensions,
 } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { createRental } from "../../../services/rentalService";
@@ -112,11 +113,17 @@ const Rents = () => {
     rentalDate && endDate ? calculateDuration(rentalDate, endDate) : 0;
   const totalPrice = duration * dailyRate;
 
+  // Get screen width to apply styles conditionally
+  const screenWidth = Dimensions.get("window").width;
+
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.title}>Rentar Motocicleta</Text>
       <TouchableOpacity
-        style={styles.card}
+        style={[
+          styles.card,
+          screenWidth >= 1024 && { width: "50%" }, // Apply 50% width only on large screens (desktops)
+        ]}
         onPress={() => setModalVisible(true)}
       >
         <Text style={styles.cardText}>
@@ -128,7 +135,12 @@ const Rents = () => {
         </Text>
       </TouchableOpacity>
 
-      <View style={styles.card}>
+      <View
+        style={[
+          styles.card,
+          screenWidth >= 1024 && { width: "50%" }, // Apply 50% width only on large screens (desktops)
+        ]}
+      >
         <Text style={styles.cardText}>Precio por día: ${dailyRate} MXN</Text>
         <Text style={styles.cardText}>Días totales: {duration}</Text>
         <Text style={styles.cardText}>Precio total: ${totalPrice} MXN</Text>
@@ -169,7 +181,12 @@ const Rents = () => {
         </View>
       </Modal>
 
-      <View style={styles.card}>
+      <View
+        style={[
+          styles.card,
+          screenWidth >= 1024 && { width: "50%" }, // Apply 50% width only on large screens (desktops)
+        ]}
+      >
         <Text
           style={{
             fontSize: 18,
@@ -226,6 +243,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderColor: colors.borderColor,
     borderWidth: 1,
+    width: "100%", // By default, 100% width for mobile
+    alignSelf: "center", // Centrar la tarjeta horizontalmente
   },
   cardText: {
     fontSize: 18,
@@ -249,8 +268,7 @@ const styles = StyleSheet.create({
   modalButtons: {
     flexDirection: "row",
     justifyContent: "space-evenly",
-    marginTop: 10,
-    marginBottom: 200,
+    marginTop: 12,
   },
 });
 

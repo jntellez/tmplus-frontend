@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Dimensions,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import colors from "../../theme/colors";
 import { getUserData } from "../../services/userService";
@@ -12,6 +18,10 @@ const Rating = ({ item, show }) => {
   const [userName, setUserName] = useState("");
   const [motorcycleName, setMotorcycleName] = useState("");
   const router = useRouter(); // Inicializar el router
+
+  // Obtener el tamaño de la pantalla
+  const { width } = Dimensions.get("window");
+  const starSize = width > 768 ? 24 : 18; // Ajuste dinámico del tamaño de las estrellas
 
   useEffect(() => {
     const getUserName = async (userId) => {
@@ -46,24 +56,27 @@ const Rating = ({ item, show }) => {
   }, [item, show]);
 
   // Renderizamos las estrellas llenas y vacías
-  const stars = [
-    ...Array(fullStars).fill(
+  const stars = [];
+  for (let i = 0; i < fullStars; i++) {
+    stars.push(
       <Ionicons
+        key={`full-${i}`}
         name="star"
-        size={18}
+        size={starSize} // Usamos el tamaño dinámico
         color={colors.pending}
-        key={`full-${Math.random()}`}
       />
-    ),
-    ...Array(emptyStars).fill(
+    );
+  }
+  for (let i = 0; i < emptyStars; i++) {
+    stars.push(
       <Ionicons
+        key={`empty-${i}`}
         name="star-outline"
-        size={18}
+        size={starSize} // Usamos el tamaño dinámico
         color={colors.pending}
-        key={`empty-${Math.random()}`}
       />
-    ),
-  ];
+    );
+  }
 
   const handleNavigation = () => {
     if (show === "motorcycle") {

@@ -1,12 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Button, StyleSheet, FlatList } from "react-native";
+import {
+  View,
+  Text,
+  Button,
+  StyleSheet,
+  FlatList,
+  Dimensions,
+} from "react-native";
 import colors from "../../theme/colors";
 import { router, useLocalSearchParams } from "expo-router";
 import { getMotorcycleById } from "../../services/motorcycleService";
-import MotorcycleSwiper from "../../components/motorcycles/MotorcycleSwiper"; // Importamos el nuevo componente
+import MotorcycleSwiper from "../../components/motorcycles/MotorcycleSwiper";
 import DeleteMotorcycleButton from "../../components/motorcycles/DeleteMotorcycleButton";
 import { getStorageItem } from "../../services/storageService";
 import RatingsPreview from "../../components/ratings/RatingsPreview";
+
+const { width } = Dimensions.get("window"); // Obtener el ancho de la pantalla
 
 const DetailScreen = () => {
   const { motorcycleId } = useLocalSearchParams();
@@ -33,7 +42,6 @@ const DetailScreen = () => {
 
   const isOwner = user.id === motorcycle.user_id;
 
-  // List of sections to render in FlatList
   const renderItem = ({ item }) => {
     if (item === "motorcycle") {
       return (
@@ -108,60 +116,70 @@ const DetailScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <FlatList
-        data={[
-          "motorcycle",
-          "description",
-          "rentalPrice",
-          "publishDate",
-          "buttons",
-          "ratings",
-        ]}
-        keyExtractor={(item) => item}
-        renderItem={renderItem}
-        ListFooterComponent={() => (
-          <>
-            {isOwner && (
-              <View style={styles.ownerButtonsContainer}>
-                <View style={[styles.button, styles.editButton]}>
+    <View style={styles.wrapper}>
+      <View
+        style={[styles.container, { width: width > 1024 ? "50%" : "100%" }]}
+      >
+        <FlatList
+          data={[
+            "motorcycle",
+            "description",
+            "rentalPrice",
+            "publishDate",
+            "buttons",
+            "ratings",
+          ]}
+          keyExtractor={(item) => item}
+          renderItem={renderItem}
+          ListFooterComponent={() => (
+            <>
+              {isOwner && (
+                <View style={styles.ownerButtonsContainer}>
+                  <View style={[styles.button, styles.editButton]}>
+                    <Button
+                      title="Editar"
+                      color={colors.pending}
+                      onPress={() =>
+                        router.push(
+                          `/more/UpdateMotorcycle/?motorcycleId=${motorcycle.id}`
+                        )
+                      }
+                    />
+                  </View>
+                  <View style={[styles.button, styles.deleteButton]}>
+                    <DeleteMotorcycleButton motorcycleId={motorcycle.id} />
+                  </View>
+                </View>
+              )}
+              {!isOwner && (
+                <View style={styles.button}>
                   <Button
-                    title="Editar"
-                    color={colors.pending}
-                    onPress={() =>
-                      router.push(
-                        `/more/UpdateMotorcycle/?motorcycleId=${motorcycle.id}`
-                      )
-                    }
+                    title="Alquilar Motocicleta"
+                    color={colors.primaryButton}
+                    onPress={() => router.push(`/${motorcycleId}/rents`)}
                   />
                 </View>
-                <View style={[styles.button, styles.deleteButton]}>
-                  <DeleteMotorcycleButton motorcycleId={motorcycle.id} />
-                </View>
-              </View>
-            )}
-            {!isOwner && (
-              <View style={styles.button}>
-                <Button
-                  title="Alquilar Motocicleta"
-                  color={colors.primaryButton}
-                  onPress={() => router.push(`/${motorcycleId}/rents`)}
-                />
-              </View>
-            )}
-            <RatingsPreview motorcycleId={motorcycleId} />
-          </>
-        )}
-      />
+              )}
+              <RatingsPreview motorcycleId={motorcycleId} />
+            </>
+          )}
+        />
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  wrapper: {
+    flex: 1,
+    justifyContent: "center", // Para centrar el contenido
+    alignItems: "center", // Centra el contenido horizontalmente
+    backgroundColor: colors.background, // Fondo para toda la pantalla
+  },
   container: {
     flex: 1,
-    backgroundColor: colors.background, // Fondo de la página
-    padding: 16, // Padding para todo el contenido
+    backgroundColor: colors.background, // Fondo para el contenedor
+    padding: 16, // Padding que tenías anteriormente
   },
   card: {
     backgroundColor: colors.cardBackground,
@@ -189,11 +207,6 @@ const styles = StyleSheet.create({
   cardText: {
     fontSize: 16,
     color: colors.lightText || "#E0E0E0",
-  },
-  buttonContainer: {
-    marginBottom: 40,
-    flexDirection: "row",
-    justifyContent: "space-around",
   },
   rowCard: {
     flexDirection: "row",

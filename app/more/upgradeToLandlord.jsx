@@ -8,9 +8,12 @@ import {
   Linking,
   Alert,
   Image,
+  Dimensions,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons"; // Importa Ionicons
 import colors from "../../theme/colors"; // Asegúrate de que tu archivo de colores esté correctamente importado
+
+const { width } = Dimensions.get("window"); // Obtén el ancho de la pantalla
 
 const UpgradeToLandlord = () => {
   const handleOpenMercadoPago = async () => {
@@ -41,7 +44,7 @@ const UpgradeToLandlord = () => {
 
   return (
     <ScrollView style={styles.container}>
-      <View>
+      <View style={[styles.content, { width: width > 1024 ? "50%" : "100%" }]}>
         {/* Título principal */}
         <Text style={styles.title}>¿Cómo Convertirte en Arrendador?</Text>
 
@@ -178,6 +181,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
     padding: 16,
+  },
+  content: {
+    marginLeft: "auto",
+    marginRight: "auto",
   },
   title: {
     fontSize: 24,
