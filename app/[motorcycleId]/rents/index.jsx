@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -17,6 +17,7 @@ import colors from "../../../theme/colors";
 import { useRouter } from "expo-router";
 import DatePicker from "../../../components/rentals/DatePicker";
 import { getStorageItem } from "../../../services/storageService";
+import { getMotorcycleById } from "../../../services/motorcycleService";
 
 const Rents = () => {
   const { motorcycleId } = useLocalSearchParams();
@@ -28,15 +29,24 @@ const Rents = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [tempStartDate, setTempStartDate] = useState(rentalDate);
   const [tempEndDate, setTempEndDate] = useState(endDate);
+  const [motorcycle, setMotorcycle] = useState({});
   const router = useRouter();
 
-  const dailyRate = 100; // Precio fijo por día
+  const dailyRate = motorcycle.rental_price;
 
   const addOneDay = (date) => {
     const newDate = new Date(date);
     newDate.setDate(newDate.getDate() + 1);
     return newDate;
   };
+
+  useEffect(() => {
+    const getDataMotorcycle = async () => {
+      const dataMotorcycle = await getMotorcycleById(motorcycleId);
+      setMotorcycle(dataMotorcycle);
+    };
+    getDataMotorcycle();
+  }, []);
 
   const calculateDuration = (startDate, endDate) => {
     const diffTime = Math.abs(endDate - startDate);
@@ -141,7 +151,9 @@ const Rents = () => {
           screenWidth >= 1024 && { width: "50%" }, // Apply 50% width only on large screens (desktops)
         ]}
       >
-        <Text style={styles.cardText}>Precio por día: ${dailyRate} MXN</Text>
+        <Text style={styles.cardText}>
+          Precio por día: ${motorcycle.rental_price} MXN
+        </Text>
         <Text style={styles.cardText}>Días totales: {duration}</Text>
         <Text style={styles.cardText}>Precio total: ${totalPrice} MXN</Text>
       </View>
